@@ -151,7 +151,7 @@ body{
     font-weight:600;
     color:var(--ink-soft);
   }
-  .navlinks{display:flex; align-items:center; gap:34px;}
+.navlinks{display:flex; align-items:center; gap:34px; margin-left:auto;}
   .navlinks a{
     font-weight:600; font-size:15px; text-decoration:none; color:var(--ink);
     position:relative; padding:4px 0;

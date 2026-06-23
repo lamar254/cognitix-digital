@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COGNITIX DEV PORTAL // ACCESS CONTROL</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --cyan:#00D4FF;
+    --violet:#7C3AED;
+    --pink:#FF2D78;
+    --amber:#F2B92B;
+    --bg:#020817;
+    --bg2:#050E25;
+    --grid:rgba(0,212,255,0.05);
+    --glow:rgba(0,212,255,0.35);
+  }
+  html,body{height:100%;overflow:hidden;background:var(--bg);}
+  canvas#bg{position:fixed;inset:0;z-index:0;}
+
+  /* scanlines */
+  body::after{
+    content:"";
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+  }
+
+  /* --- HEADER BAR --- */
+  #topbar{
+    position:fixed;top:0;left:0;right:0;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;
+    border-bottom:1px solid rgba(0,212,255,0.12);
+    background:rgba(2,8,23,0.7);
+    backdrop-filter:blur(12px);
+  }
+  #topbar .logo-area{display:flex;align-items:center;gap:12px;}
+  #topbar .logo-text{
+    font-family:'Courier New',monospace;font-weight:700;font-size:15px;
+    color:var(--cyan);letter-spacing:2px;
+  }
+  #topbar .pipe{color:rgba(0,212,255,0.4);margin:0 6px;}
+  #topbar .sub{font-family:'Courier New',monospace;font-size:11px;color:rgba(0,212,255,0.5);letter-spacing:3px;}
+  .status-row{display:flex;align-items:center;gap:18px;}
+  .status-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 8px var(--cyan);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .status-label{font-family:'Courier New',monospace;font-size:11px;color:rgba(0,212,255,0.55);letter-spacing:2px;}
+  #clock{font-family:'Courier New',monospace;font-size:11px;color:rgba(0,212,255,0.6);letter-spacing:1px;}
+
+  /* --- CORNER HUD DECO --- */
+  .hud-corner{position:fixed;z-index:3;width:60px;height:60px;}
+  .hud-corner svg{display:block;}
+  .hud-corner.tl{top:70px;left:20px;}
+  .hud-corner.tr{top:70px;right:20px;transform:scaleX(-1);}
+  .hud-corner.bl{bottom:20px;left:20px;transform:scaleY(-1);}
+  .hud-corner.br{bottom:20px;right:20px;transform:scale(-1,-1);}
+
+  /* --- CENTER STAGE --- */
+  #stage{
+    position:fixed;inset:0;z-index:5;
+    display:flex;align-items:center;justify-content:center;
+    padding:80px 20px 20px;
+  }
+
+  /* --- LOGIN CARD --- */
+  .card{
+    position:relative;
+    width:100%;max-width:430px;
+    background:rgba(5,14,37,0.88);
+    border:1px solid rgba(0,212,255,0.22);
+    border-radius:4px;
+    padding:44px 40px 38px;
+    backdrop-filter:blur(20px);
+    box-shadow:
+      0 0 0 1px rgba(0,212,255,0.06),
+      0 0 60px rgba(0,212,255,0.07),
+      inset 0 0 60px rgba(0,212,255,0.03);
+  }
+  /* bracket corners */
+  .card::before,.card::after{
+    content:"";position:absolute;
+    width:18px;height:18px;
+    border-color:var(--cyan);border-style:solid;
+    opacity:.7;
+  }
+  .card::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
+  .card::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+
+  /* extra corners via wrapper */
+  .card-wrap{position:relative;}
+  .card-wrap::before,.card-wrap::after{
+    content:"";position:absolute;
+    width:18px;height:18px;
+    border-color:var(--cyan);border-style:solid;
+    opacity:.7;z-index:6;
+  }
+  .card-wrap::before{top:-1px;right:-1px;border-width:2px 2px 0 0;}
+  .card-wrap::after{bottom:-1px;left:-1px;border-width:0 0 2px 2px;}
+
+  /* scanning line */
+  .scan-line{
+    position:absolute;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+    animation:scandown 3.5s linear infinite;
+    opacity:.35;
+    pointer-events:none;
+    border-radius:2px;
+  }
+  @keyframes scandown{
+    0%{top:-2px;opacity:0;}
+    10%{opacity:.35;}
+    90%{opacity:.35;}
+    100%{top:100%;opacity:0;}
+  }
+
+  .card-header{text-align:center;margin-bottom:34px;}
+  .card-eyebrow{
+    font-family:'Courier New',monospace;
+    font-size:10px;letter-spacing:4px;
+    color:rgba(0,212,255,0.5);
+    text-transform:uppercase;
+    margin-bottom:12px;
+    display:block;
+  }
+  .card-title{
+    font-family:'Courier New',monospace;
+    font-size:22px;font-weight:700;
+    color:#fff;letter-spacing:2px;
+    text-shadow:0 0 20px rgba(0,212,255,0.4);
+  }
+  .card-title span{color:var(--cyan);}
+  .card-divider{
+    height:1px;
+    background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+    margin:18px 0;opacity:.35;
+  }
+
+  /* form fields */
+  .field{margin-bottom:20px;}
+  label{
+    font-family:'Courier New',monospace;
+    font-size:10px;letter-spacing:3px;
+    color:rgba(0,212,255,0.55);
+    display:block;margin-bottom:8px;
+  }
+  .input-wrap{position:relative;}
+  .input-wrap i{
+    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    font-size:14px;color:rgba(0,212,255,0.4);
+    font-style:normal;
+  }
+  input[type=text],input[type=password]{
+    width:100%;
+    background:rgba(0,212,255,0.04);
+    border:1px solid rgba(0,212,255,0.2);
+    border-radius:3px;
+    padding:13px 14px 13px 38px;
+    color:#fff;
+    font-family:'Courier New',monospace;
+    font-size:13px;
+    letter-spacing:1px;
+    outline:none;
+    transition:border-color .2s,box-shadow .2s;
+    caret-color:var(--cyan);
+  }
+  input:focus{
+    border-color:var(--cyan);
+    box-shadow:0 0 0 1px rgba(0,212,255,0.2),0 0 20px rgba(0,212,255,0.1);
+  }
+  input::placeholder{color:rgba(255,255,255,0.18);letter-spacing:1px;}
+
+  /* submit button */
+  #loginBtn{
+    width:100%;margin-top:8px;
+    padding:15px;
+    background:transparent;
+    border:1px solid var(--cyan);
+    border-radius:3px;
+    color:var(--cyan);
+    font-family:'Courier New',monospace;
+    font-size:13px;font-weight:700;
+    letter-spacing:4px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition:color .25s,background .25s,box-shadow .25s;
+  }
+  #loginBtn::before{
+    content:"";
+    position:absolute;left:-100%;top:0;bottom:0;
+    width:100%;
+    background:linear-gradient(90deg,transparent,rgba(0,212,255,0.12),transparent);
+    animation:shimmer 2.5s ease-in-out infinite;
+  }
+  @keyframes shimmer{
+    0%{left:-100%;}100%{left:100%;}
+  }
+  #loginBtn:hover{
+    background:rgba(0,212,255,0.08);
+    box-shadow:0 0 20px rgba(0,212,255,0.25);
+    color:#fff;
+  }
+  #loginBtn:active{transform:scale(0.99);}
+
+  /* error */
+  #errMsg{
+    font-family:'Courier New',monospace;
+    font-size:11px;letter-spacing:2px;
+    color:var(--pink);
+    text-align:center;
+    margin-top:12px;
+    min-height:18px;
+    opacity:0;transition:opacity .2s;
+  }
+  #errMsg.show{opacity:1;}
+
+  /* footer note */
+  .card-foot{
+    margin-top:22px;text-align:center;
+    font-family:'Courier New',monospace;
+    font-size:9px;letter-spacing:2px;
+    color:rgba(255,255,255,0.2);
+  }
+
+  /* --- BOOT SCREEN --- */
+  #bootScreen{
+    position:fixed;inset:0;z-index:100;
+    background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:0;
+    opacity:1;transition:opacity .8s ease;
+  }
+  #bootScreen.fade-out{opacity:0;pointer-events:none;}
+  #bootScreen.gone{display:none;}
+
+  #bootLines{
+    font-family:'Courier New',monospace;
+    font-size:13px;line-height:1.8;
+    color:rgba(0,212,255,0.7);
+    text-align:left;
+    width:min(480px,90vw);
+    min-height:280px;
+    letter-spacing:.5px;
+  }
+  .boot-line{opacity:0;transition:opacity .15s;}
+  .boot-line.on{opacity:1;}
+  .boot-line.err{color:var(--pink);}
+  .boot-line.ok{color:#3DFF82;}
+  .boot-line.warn{color:var(--amber);}
+
+  #welcomeBanner{
+    margin-top:40px;
+    font-family:'Courier New',monospace;
+    font-size:clamp(24px,5vw,44px);
+    font-weight:700;
+    color:#fff;
+    letter-spacing:6px;
+    text-align:center;
+    text-shadow:0 0 30px var(--cyan), 0 0 60px rgba(0,212,255,0.4);
+    opacity:0;transform:scale(0.92);
+    transition:opacity .6s ease,transform .6s ease;
+  }
+  #welcomeBanner.show{opacity:1;transform:scale(1);}
+  #welcomeBanner span{color:var(--cyan);}
+
+  #enterBtn{
+    margin-top:30px;
+    padding:13px 40px;
+    background:transparent;
+    border:1px solid var(--cyan);
+    border-radius:3px;
+    color:var(--cyan);
+    font-family:'Courier New',monospace;
+    font-size:12px;font-weight:700;letter-spacing:4px;
+    cursor:pointer;
+    opacity:0;transition:opacity .5s,background .25s,box-shadow .25s;
+  }
+  #enterBtn.show{opacity:1;}
+  #enterBtn:hover{background:rgba(0,212,255,0.1);box-shadow:0 0 20px rgba(0,212,255,0.2);}
+
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:.5;box-shadow:0 0 4px var(--cyan);}}
+</style>
+</head>
+<body>
+
+<!-- animated grid canvas -->
+<canvas id="bg"></canvas>
+
+<!-- BOOT SCREEN (shown after login) -->
+<div id="bootScreen" class="gone">
+  <div id="bootLines"></div>
+  <div id="welcomeBanner">WELCOME, <span id="wName"></span></div>
+  <button id="enterBtn" onclick="enterPortal()">ENTER PORTAL →</button>
+</div>
+
+<!-- TOP HUD BAR -->
+<div id="topbar">
+  <div class="logo-area">
+    <span class="logo-text">COGNITIX</span>
+    <span class="pipe">|</span>
+    <span class="sub">DEV PORTAL</span>
+  </div>
+  <div class="status-row">
+    <div class="status-dot"></div>
+    <span class="status-label">SYSTEM ONLINE</span>
+    <span id="clock"></span>
+  </div>
+</div>
+
+<!-- CORNER BRACKETS -->
+<div class="hud-corner tl"><svg viewBox="0 0 60 60" fill="none"><path d="M0 40 L0 0 L40 0" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><circle cx="4" cy="4" r="2" fill="rgba(0,212,255,0.4)"/></svg></div>
+<div class="hud-corner tr"><svg viewBox="0 0 60 60" fill="none"><path d="M0 40 L0 0 L40 0" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><circle cx="4" cy="4" r="2" fill="rgba(0,212,255,0.4)"/></svg></div>
+<div class="hud-corner bl"><svg viewBox="0 0 60 60" fill="none"><path d="M0 40 L0 0 L40 0" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><circle cx="4" cy="4" r="2" fill="rgba(0,212,255,0.4)"/></svg></div>
+<div class="hud-corner br"><svg viewBox="0 0 60 60" fill="none"><path d="M0 40 L0 0 L40 0" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><circle cx="4" cy="4" r="2" fill="rgba(0,212,255,0.4)"/></svg></div>
+
+<!-- LOGIN FORM -->
+<div id="stage">
+  <div class="card-wrap">
+    <div class="card">
+      <div class="scan-line"></div>
+      <div class="card-header">
+        <span class="card-eyebrow">// SECURE ACCESS REQUIRED</span>
+        <div class="card-title">COGNITIX<span>X</span></div>
+        <div class="card-divider"></div>
+      </div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="field">
+          <label for="uname">▸ IDENTIFIER</label>
+          <div class="input-wrap">
+            <i aria-hidden="true">⌘</i>
+            <input type="text" id="uname" placeholder="username" spellcheck="false" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="upass">▸ PASSKEY</label>
+          <div class="input-wrap">
+            <i aria-hidden="true">⊗</i>
+            <input type="password" id="upass" placeholder="••••••••">
+          </div>
+        </div>
+        <button type="submit" id="loginBtn">AUTHENTICATE</button>
+        <div id="errMsg">⚠ ACCESS DENIED — INVALID CREDENTIALS</div>
+      </form>
+
+      <div class="card-foot">COGNITIX DIGITAL // NAIROBI // EST. 2024</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---- CLOCK ---- */
+  function tick(){
+    const n=new Date();
+    document.getElementById('clock').textContent=
+      n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }
+  tick(); setInterval(tick,1000);
+
+  /* ---- CANVAS GRID + PARTICLES ---- */
+  const canvas=document.getElementById('bg');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+  const GRID=60;
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    makeParticles();
+  }
+
+  function makeParticles(){
+    particles=[];
+    const count=Math.floor((W*H)/18000);
+    for(let i=0;i<count;i++){
+      particles.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:Math.random()*1.8+0.4,
+        vx:(Math.random()-.5)*.35,
+        vy:(Math.random()-.5)*.35,
+        o:Math.random()*.55+.15
+      });
+    }
+  }
+
+  /* pulse ring state */
+  let rings=[];
+  setInterval(()=>{
+    rings.push({x:Math.random()*W,y:Math.random()*H,r:0,max:Math.random()*120+80,o:.5});
+  },3000);
+
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    /* grid */
+    ctx.strokeStyle='rgba(0,212,255,0.055)';
+    ctx.lineWidth=.5;
+    for(let x=0;x<W;x+=GRID){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+    /* grid dots at intersections */
+    ctx.fillStyle='rgba(0,212,255,0.18)';
+    for(let x=0;x<W;x+=GRID) for(let y=0;y<H;y+=GRID){
+      ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
+    }
+
+    /* pulse rings */
+    rings=rings.filter(r=>r.o>0.01);
+    rings.forEach(r=>{
+      ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,212,255,${r.o})`;
+      ctx.lineWidth=.8;ctx.stroke();
+      r.r+=1.2; r.o*=.96;
+    });
+
+    /* particles */
+    particles.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,212,255,${p.o})`;ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    });
+
+    /* moving scan line across whole screen */
+    const sy=((frame*1.2)%H);
+    const sg=ctx.createLinearGradient(0,sy-30,0,sy+30);
+    sg.addColorStop(0,'rgba(0,212,255,0)');
+    sg.addColorStop(.5,'rgba(0,212,255,0.04)');
+    sg.addColorStop(1,'rgba(0,212,255,0)');
+    ctx.fillStyle=sg; ctx.fillRect(0,sy-30,W,60);
+
+    frame++; requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize(); draw();
+
+  /* ---- CREDENTIALS (demo — replace / extend as needed) ---- */
+  const USERS={
+    'kevin':  {pass:'cognitix', display:'KEVIN'},
+    'admin':  {pass:'admin123', display:'ADMIN'},
+    'muchemi':{pass:'devmode',  display:'MUCHEMI'},
+  };
+
+  /* ---- LOGIN FORM ---- */
+  const form=document.getElementById('loginForm');
+  const err=document.getElementById('errMsg');
+
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    const un=document.getElementById('uname').value.trim().toLowerCase();
+    const pw=document.getElementById('upass').value;
+    const btn=document.getElementById('loginBtn');
+
+    if(USERS[un] && USERS[un].pass===pw){
+      btn.textContent='AUTHENTICATING...';
+      btn.disabled=true;
+      err.classList.remove('show');
+      setTimeout(()=>startBoot(USERS[un].display),500);
+    } else {
+      err.classList.remove('show');
+      void err.offsetWidth; /* reflow for re-trigger */
+      err.classList.add('show');
+      document.getElementById('upass').value='';
+      document.getElementById('upass').focus();
+    }
+  });
+
+  /* ---- BOOT SEQUENCE ---- */
+  const BOOT_LINES=[
+    {t:'[  OK  ] Initializing COGNITIX secure shell…',    cls:'ok',  d:0},
+    {t:'[  OK  ] Mounting encrypted volume…',             cls:'ok',  d:220},
+    {t:'[ WARN ] Legacy protocol fallback disabled',       cls:'warn',d:420},
+    {t:'[  OK  ] Loading user profile…',                  cls:'ok',  d:640},
+    {t:'[  OK  ] Environment vars applied',               cls:'ok',  d:830},
+    {t:'[ INFO ] Establishing secure tunnel…',            cls:'',    d:1050},
+    {t:'[  OK  ] AES-256 handshake complete',             cls:'ok',  d:1280},
+    {t:'[  OK  ] Loading developer modules…',             cls:'ok',  d:1480},
+    {t:'[ INFO ] Spatial audio engine ready',             cls:'',    d:1680},
+    {t:'[  OK  ] Authentication verified ──────────────', cls:'ok',  d:1900},
+  ];
+
+  function startBoot(displayName){
+    const screen=document.getElementById('bootScreen');
+    screen.classList.remove('gone');
+    screen.style.opacity='1';
+    screen.style.transition='none';
+
+    const linesEl=document.getElementById('bootLines');
+    linesEl.innerHTML='';
+
+    BOOT_LINES.forEach(bl=>{
+      const div=document.createElement('div');
+      div.className='boot-line'+(bl.cls?' '+bl.cls:'');
+      div.textContent=bl.t;
+      linesEl.appendChild(div);
+      setTimeout(()=>div.classList.add('on'), bl.d);
+    });
+
+    /* after lines done: welcome banner + voice */
+    const totalDelay=BOOT_LINES[BOOT_LINES.length-1].d+500;
+    setTimeout(()=>{
+      document.getElementById('wName').textContent=displayName;
+      const banner=document.getElementById('welcomeBanner');
+      banner.classList.add('show');
+      speakWelcome(displayName);
+    }, totalDelay);
+
+    setTimeout(()=>{
+      document.getElementById('enterBtn').classList.add('show');
+      sessionStorage.setItem('cx_user', displayName);
+    }, totalDelay+1200);
+  }
+
+  /* ---- VOICE GREETING ---- */
+  function speakWelcome(name){
+    if(!window.speechSynthesis) return;
+    const synth=window.speechSynthesis;
+    synth.cancel();
+
+    function speak(){
+      const utt=new SpeechSynthesisUtterance();
+      utt.text=`Access granted. Welcome, ${name}. Cognitix Dev Portal is ready.`;
+      utt.pitch=0.78;
+      utt.rate=0.88;
+      utt.volume=1;
+
+      const voices=synth.getVoices();
+      const pick=
+        voices.find(v=>/Google.*UK.*Male|Daniel|Microsoft David/i.test(v.name)) ||
+        voices.find(v=>/en/.test(v.lang) && v.gender==='male') ||
+        voices.find(v=>/en/.test(v.lang)) ||
+        voices[0];
+      if(pick) utt.voice=pick;
+
+      synth.speak(utt);
+    }
+
+    /* voices may not be loaded yet */
+    if(synth.getVoices().length>0){ speak(); }
+    else { synth.addEventListener('voiceschanged', speak, {once:true}); }
+  }
+
+  /* ---- ENTER PORTAL ---- */
+  function enterPortal(){
+    const screen=document.getElementById('bootScreen');
+    screen.style.transition='opacity .8s ease';
+    screen.classList.add('fade-out');
+    setTimeout(()=>{ window.location.href='dev-portal.html'; },800);
+  }
+</script>
+</body>
+</html>

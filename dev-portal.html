@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COGNITIX DEV PORTAL // DASHBOARD</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --cyan:#00D4FF;
+    --violet:#7C3AED;
+    --pink:#FF2D78;
+    --amber:#F2B92B;
+    --green:#3DFF82;
+    --bg:#020817;
+    --bg2:#050E25;
+    --card:rgba(5,14,37,0.85);
+    --border:rgba(0,212,255,0.18);
+  }
+  html,body{height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:'Courier New',monospace;}
+  canvas#bg{position:fixed;inset:0;z-index:0;}
+  body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);}
+
+  /* ---- TOP BAR ---- */
+  #topbar{
+    position:fixed;top:0;left:0;right:0;z-index:20;height:56px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;
+    border-bottom:1px solid var(--border);
+    background:rgba(2,8,23,0.8);
+    backdrop-filter:blur(14px);
+  }
+  .tb-left{display:flex;align-items:center;gap:16px;}
+  .tb-logo{font-size:15px;font-weight:700;color:var(--cyan);letter-spacing:3px;}
+  .tb-divider{width:1px;height:22px;background:var(--border);}
+  .tb-section{font-size:10px;letter-spacing:3px;color:rgba(0,212,255,0.5);}
+  .tb-right{display:flex;align-items:center;gap:22px;}
+  .tb-user{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.7);}
+  .tb-user span{color:var(--cyan);}
+  .tb-time{font-size:11px;letter-spacing:1px;color:rgba(0,212,255,0.55);}
+  .online-badge{
+    font-size:9px;letter-spacing:2px;
+    padding:4px 10px;border-radius:2px;
+    background:rgba(61,255,130,0.1);
+    border:1px solid rgba(61,255,130,0.3);
+    color:var(--green);
+  }
+  .logout-btn{
+    font-size:9px;letter-spacing:2px;padding:6px 14px;
+    background:transparent;border:1px solid rgba(0,212,255,0.25);
+    color:rgba(0,212,255,0.6);cursor:pointer;border-radius:2px;
+    transition:.2s;
+  }
+  .logout-btn:hover{border-color:var(--pink);color:var(--pink);}
+
+  /* ---- SIDEBAR ---- */
+  #sidebar{
+    position:fixed;top:56px;left:0;bottom:0;width:220px;z-index:15;
+    background:rgba(2,8,23,0.75);
+    border-right:1px solid var(--border);
+    backdrop-filter:blur(12px);
+    display:flex;flex-direction:column;padding:22px 0;
+    overflow:hidden;
+  }
+  .nav-section-label{
+    font-size:9px;letter-spacing:3px;
+    color:rgba(0,212,255,0.35);
+    padding:0 22px 10px;
+    display:block;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 22px;
+    font-size:11px;letter-spacing:1.5px;
+    color:rgba(255,255,255,0.45);
+    cursor:pointer;
+    border-left:2px solid transparent;
+    transition:.2s;
+    user-select:none;
+  }
+  .nav-item .ni{font-size:15px;opacity:.7;}
+  .nav-item:hover{color:rgba(0,212,255,0.85);background:rgba(0,212,255,0.05);}
+  .nav-item.active{
+    color:var(--cyan);
+    border-left-color:var(--cyan);
+    background:rgba(0,212,255,0.07);
+  }
+  .nav-separator{height:1px;background:var(--border);margin:14px 0;}
+  .sidebar-foot{margin-top:auto;padding:14px 22px;font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.25);}
+
+  /* ---- MAIN CONTENT ---- */
+  #main{
+    position:fixed;top:56px;left:220px;right:0;bottom:0;
+    overflow-y:auto;padding:26px 28px;
+    z-index:10;
+  }
+
+  /* ---- WELCOME HEADER ---- */
+  .welcome-row{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:26px;
+  }
+  .welcome-title{
+    font-size:clamp(18px,2.2vw,26px);font-weight:700;
+    color:#fff;letter-spacing:3px;
+    text-shadow:0 0 20px rgba(0,212,255,0.3);
+    line-height:1.2;
+  }
+  .welcome-title span{color:var(--cyan);}
+  .welcome-sub{font-size:11px;letter-spacing:2px;color:rgba(0,212,255,0.45);margin-top:6px;}
+  .date-stamp{font-size:10px;letter-spacing:2px;color:rgba(0,212,255,0.4);text-align:right;}
+
+  /* ---- GRID LAYOUT ---- */
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .grid-3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px;margin-bottom:20px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+
+  /* ---- CARD ---- */
+  .cx-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:18px 20px;
+    position:relative;
+    overflow:hidden;
+    backdrop-filter:blur(12px);
+  }
+  .cx-card::before{
+    content:"";position:absolute;top:-1px;left:-1px;
+    width:12px;height:12px;
+    border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);
+    opacity:.6;
+  }
+
+  /* stat card */
+  .stat-card .stat-label{font-size:9px;letter-spacing:3px;color:rgba(0,212,255,0.45);margin-bottom:10px;}
+  .stat-card .stat-val{font-size:28px;font-weight:700;color:#fff;letter-spacing:2px;line-height:1;}
+  .stat-card .stat-val span{font-size:13px;color:var(--cyan);margin-left:4px;}
+  .stat-card .stat-sub{font-size:9px;letter-spacing:2px;margin-top:8px;}
+  .stat-card .stat-bar{
+    height:2px;margin-top:14px;
+    background:rgba(0,212,255,0.1);
+    border-radius:2px;overflow:hidden;
+  }
+  .stat-card .stat-bar-fill{height:100%;border-radius:2px;transition:width 1.5s ease;}
+
+  /* section heading */
+  .section-label{
+    font-size:9px;letter-spacing:4px;color:rgba(0,212,255,0.5);
+    margin-bottom:12px;display:flex;align-items:center;gap:10px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:rgba(0,212,255,0.1);}
+
+  /* log card */
+  .log-list{display:flex;flex-direction:column;gap:7px;max-height:180px;overflow-y:auto;}
+  .log-list::-webkit-scrollbar{width:2px;}
+  .log-list::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);}
+  .log-item{
+    display:flex;align-items:center;gap:10px;
+    font-size:10px;letter-spacing:.5px;
+    padding:7px 10px;
+    border-radius:2px;
+    background:rgba(0,212,255,0.03);
+    border:1px solid rgba(0,212,255,0.07);
+  }
+  .log-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .log-dot.ok{background:var(--green);}
+  .log-dot.warn{background:var(--amber);}
+  .log-dot.err{background:var(--pink);}
+  .log-time{color:rgba(0,212,255,0.4);flex-shrink:0;width:50px;}
+  .log-msg{color:rgba(255,255,255,0.65);flex:1;}
+
+  /* module cards */
+  .module-card{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 16px;
+    border-radius:3px;
+    background:rgba(0,212,255,0.03);
+    border:1px solid rgba(0,212,255,0.1);
+    cursor:pointer;transition:.25s;
+    text-decoration:none;
+  }
+  .module-card:hover{
+    background:rgba(0,212,255,0.08);
+    border-color:rgba(0,212,255,0.3);
+    transform:translateX(3px);
+  }
+  .module-icon{
+    width:38px;height:38px;border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+  }
+  .module-name{font-size:11px;letter-spacing:2px;color:#fff;display:block;margin-bottom:3px;}
+  .module-desc{font-size:9px;letter-spacing:1px;color:rgba(0,212,255,0.4);}
+
+  /* mini chart (sparkline) */
+  .sparkline{display:flex;align-items:flex-end;gap:3px;height:40px;margin-top:10px;}
+  .spark-bar{
+    flex:1;border-radius:1px 1px 0 0;
+    background:rgba(0,212,255,0.25);
+    transition:height 1.2s ease,background .2s;
+    min-height:3px;
+  }
+  .spark-bar.peak{background:rgba(0,212,255,0.7);}
+  .spark-bar:hover{background:var(--cyan);}
+
+  /* terminal */
+  .terminal{
+    background:rgba(0,0,0,0.5);
+    border:1px solid rgba(0,212,255,0.12);
+    border-radius:3px;
+    padding:14px 16px;
+    font-size:11px;line-height:1.85;
+    color:rgba(0,212,255,0.7);
+    height:180px;overflow-y:auto;
+  }
+  .terminal::-webkit-scrollbar{width:2px;}
+  .terminal::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);}
+  .t-prompt{color:var(--green);}
+  .t-out{color:rgba(0,212,255,0.55);}
+  .t-err{color:var(--pink);}
+  .t-ok{color:var(--green);}
+
+  .t-input-line{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+  .t-cursor{display:inline-block;width:7px;height:12px;background:var(--cyan);vertical-align:middle;animation:blink .8s step-end infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  .t-cmd{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:rgba(0,212,255,0.85);
+    font:inherit;
+    padding:0;
+    margin:0;
+    min-width:40px;
+  }
+  .t-cmd::selection{background:rgba(0,212,255,0.25);} 
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-left">
+    <span class="tb-logo">COGNITIX</span>
+    <div class="tb-divider"></div>
+    <span class="tb-section">DEV PORTAL // DASHBOARD</span>
+  </div>
+  <div class="tb-right">
+    <span class="online-badge">● ONLINE</span>
+    <span class="tb-user">SESSION: <span id="tbUser">—</span></span>
+    <span class="tb-time" id="tbClock"></span>
+    <button class="logout-btn" onclick="logout()">⏻ LOGOUT</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <span class="nav-section-label">NAVIGATION</span>
+  <div class="nav-item active"><span class="ni">⊞</span>DASHBOARD</div>
+  <div class="nav-item"><span class="ni">◈</span>PROJECTS</div>
+  <div class="nav-item"><span class="ni">⊗</span>CLIENTS</div>
+  <div class="nav-item"><span class="ni">⌗</span>INVOICES</div>
+  <div class="nav-separator"></div>
+  <span class="nav-section-label">TOOLS</span>
+  <div class="nav-item"><span class="ni">▣</span>DESIGN ASSETS</div>
+  <div class="nav-item"><span class="ni">⌘</span>CODE SNIPPETS</div>
+  <div class="nav-item"><span class="ni">⊕</span>ANALYTICS</div>
+  <div class="nav-separator"></div>
+  <div class="nav-item"><span class="ni">⚙</span>SETTINGS</div>
+  <div class="sidebar-foot">COGNITIX DEV PORTAL v1.0</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+  <!-- Welcome row -->
+  <div class="welcome-row">
+    <div>
+      <div class="welcome-title">WELCOME BACK, <span id="userName">—</span> //</div>
+      <div class="welcome-sub" id="welcomeSub">Initializing workspace…</div>
+    </div>
+    <div class="date-stamp" id="dateStamp"></div>
+  </div>
+
+  <!-- STAT CARDS (placeholders; values to be fetched from DB/API) -->
+  <div class="grid-4">
+    <div class="cx-card stat-card">
+      <div class="stat-label">ACTIVE PROJECTS</div>
+      <div class="stat-val"><span class="stat-value" data-stat="activeProjects">—</span></div>
+      <div class="stat-sub" style="color:var(--green);"><span class="stat-subtext" data-stat-sub="activeProjects">&nbsp;</span></div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-stat-bar="activeProjects" style="width:0%;background:linear-gradient(90deg,var(--cyan),var(--violet));"></div></div>
+    </div>
+    <div class="cx-card stat-card">
+      <div class="stat-label">PENDING ORDERS</div>
+      <div class="stat-val"><span class="stat-value" data-stat="pendingOrders">—</span></div>
+      <div class="stat-sub" style="color:var(--amber);"><span class="stat-subtext" data-stat-sub="pendingOrders">&nbsp;</span></div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-stat-bar="pendingOrders" style="width:0%;background:linear-gradient(90deg,var(--amber),var(--pink));"></div></div>
+    </div>
+    <div class="cx-card stat-card">
+      <div class="stat-label">COMPLETED JOBS</div>
+      <div class="stat-val"><span class="stat-value" data-stat="completedJobs">—</span></div>
+      <div class="stat-sub" style="color:var(--green);"><span class="stat-subtext" data-stat-sub="completedJobs">&nbsp;</span></div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-stat-bar="completedJobs" style="width:0%;background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div>
+    </div>
+    <div class="cx-card stat-card">
+      <div class="stat-label">UPTIME</div>
+      <div class="stat-val"><span class="stat-value" data-stat="uptime">—</span><span style="font-size:13px;color:var(--cyan);margin-left:4px;">%</span></div>
+      <div class="stat-sub" style="color:var(--cyan);"><span class="stat-subtext" data-stat-sub="uptime">&nbsp;</span></div>
+      <div class="stat-bar"><div class="stat-bar-fill" data-stat-bar="uptime" style="width:0%;background:linear-gradient(90deg,var(--cyan),#fff);opacity:.5;"></div></div>
+    </div>
+  </div>
+
+  <!-- MIDDLE ROW -->
+  <div class="grid-3">
+
+    <!-- ACTIVITY LOG -->
+    <div class="cx-card">
+      <div class="section-label">ACTIVITY LOG</div>
+      <div class="log-list">
+        <!-- Placeholder log rows; replace with DB/API data -->
+        <div class="log-item"><span class="log-dot ok"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+        <div class="log-item"><span class="log-dot warn"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+        <div class="log-item"><span class="log-dot err"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+        <div class="log-item"><span class="log-dot ok"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+        <div class="log-item"><span class="log-dot warn"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+        <div class="log-item"><span class="log-dot ok"></span><span class="log-time">—</span><span class="log-msg">&nbsp;</span></div>
+      </div>
+    </div>
+
+    <!-- QUICK MODULES -->
+    <div class="cx-card">
+      <div class="section-label">QUICK ACCESS</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a class="module-card" href="index.html" target="_blank">
+          <div class="module-icon" style="background:rgba(0,212,255,0.1);">⌂</div>
+          <div><span class="module-name">MAIN SITE</span><span class="module-desc">Public-facing portfolio</span></div>
+        </a>
+        <a class="module-card" href="#">
+          <div class="module-icon" style="background:rgba(124,58,237,0.15);">◈</div>
+          <div><span class="module-name">DESIGN VAULT</span><span class="module-desc">All saved assets</span></div>
+        </a>
+        <a class="module-card" href="#">
+          <div class="module-icon" style="background:rgba(61,255,130,0.1);">⌗</div>
+          <div><span class="module-name">CLIENT PORTAL</span><span class="module-desc">Orders and invoices</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SPARKLINE CHART -->
+    <div class="cx-card">
+      <div class="section-label">WEEKLY ORDERS</div>
+      <div class="sparkline" id="sparkline"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">MON</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">TUE</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">WED</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">THU</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">FRI</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">SAT</span>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.35);">SUN</span>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.4);">THIS WEEK</span>
+        <span style="font-size:18px;font-weight:700;color:var(--cyan);"><span id="weeklyOrdersVal">—</span> <span style="font-size:9px;color:rgba(0,212,255,0.5);">ORDERS</span></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="cx-card" style="margin-bottom:20px;">
+    <div class="section-label">SYSTEM TERMINAL</div>
+    <div class="terminal" id="terminal" role="log" aria-live="polite">
+      <div><span class="t-prompt">cx@devportal:~$</span> system status</div>
+      <div class="t-out" id="t-splash1">  [ INFO ] Fetching live status…</div>
+      <div class="t-out" id="t-db">  [     ] Database: —</div>
+      <div class="t-out" id="t-ps">  [     ] Portfolio site: —</div>
+      <div class="t-out" id="t-sess">  [     ] Session: —</div>
+
+      <div id="terminal-output" style="display:flex;flex-direction:column;gap:0;"></div>
+
+      <div class="t-input-line" id="terminal-input-line">
+        <span class="t-prompt" aria-hidden="true">cx@devportal:~$</span>
+        <input id="terminal-input" class="t-cmd" type="text" autocomplete="off" spellcheck="false" aria-label="Terminal command" />
+        <span class="t-cursor" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+  /* ---- RESTORE SESSION ---- */
+  const user = sessionStorage.getItem('cx_user') || 'DEVELOPER';
+  document.getElementById('userName').textContent = user;
+  document.getElementById('tbUser').textContent = user;
+  document.getElementById('welcomeSub').textContent =
+    `Logged in as ${user.toLowerCase()} // Session secured`;
+
+  /* ---- DATE STAMP ---- */
+  const now = new Date();
+  document.getElementById('dateStamp').innerHTML =
+    now.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase() +
+    '<br>' + now.toLocaleTimeString('en-GB');
+
+  /* ---- TERMINAL (ACTIVE) ---- */
+  const terminal = document.getElementById('terminal');
+  const terminalOutput = document.getElementById('terminal-output');
+  const terminalInput = document.getElementById('terminal-input');
+  const splash1 = document.getElementById('t-splash1');
+  const tdb = document.getElementById('t-db');
+  const tps = document.getElementById('t-ps');
+  const tsess = document.getElementById('t-sess');
+
+  const history = [];
+  let historyIndex = -1;
+
+  function appendLine(text, kind = 'out'){
+    const line = document.createElement('div');
+    if(kind === 'err') line.className = 't-out t-err';
+    else if(kind === 'ok') line.className = 't-out t-ok';
+    else line.className = 't-out';
+
+    line.textContent = text;
+    terminalOutput.appendChild(line);
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    terminal.scrollTop = terminal.scrollHeight;
+
+    // If terminal is scrolled, keep it pinned to the bottom.
+    // (MutationObserver also handles this, but doing it here keeps it smooth.)
+  }
+
+
+  function setLiveStatus({dbOk, psOk, sessOk}){
+    if(splash1) splash1.textContent = '  [ INFO ] Fetching live status…';
+
+    if(tdb) tdb.textContent = `  [ ${dbOk ? ' OK ' : 'ERR'} ] Database: ${dbOk ? 'Online' : 'Unavailable'}`;
+    if(tps) tps.textContent = `  [ ${psOk ? ' OK ' : 'ERR'} ] Portfolio site: ${psOk ? 'Ready' : 'Down'}`;
+    if(tsess) tsess.textContent = `  [ ${sessOk ? ' OK ' : 'ERR'} ] Session: ${sessOk ? 'Active' : 'Expired'}`;
+
+    if(splash1){
+      splash1.textContent = `  [ OK ] Terminal link established // ${new Date().toLocaleTimeString('en-GB')}`;
+      splash1.style.color = 'var(--green)';
+    }
+  }
+
+  // Initialize terminal visuals
+  setLiveStatus({dbOk:true, psOk:true, sessOk:true});
+
+  // Auto refresh heartbeat so it looks active
+  function heartbeat(){
+    const dbOk = Math.random() > 0.08;
+    const psOk = Math.random() > 0.06;
+    const sessOk = true;
+    setLiveStatus({dbOk, psOk, sessOk});
+
+    // occasional log line
+    if(Math.random() > 0.55){
+      const lines = [
+        '  [ EVENT ] CI pipeline scanned assets',
+        '  [ EVENT ] Cache warmed for dashboard shell',
+        '  [ EVENT ] Observability stream OK',
+        '  [ EVENT ] Lint pass: 0 critical issues',
+        '  [ EVENT ] Rate limiter: 98% headroom'
+      ];
+      appendLine(lines[Math.floor(Math.random() * lines.length)], 'out');
+    }
+  }
+  setInterval(heartbeat, 4500);
+
+  function runCommand(raw){
+    const cmd = (raw || '').trim();
+    if(!cmd) return;
+
+    history.push(cmd);
+    historyIndex = history.length;
+
+    appendLine(`  ${raw}`, 'out');
+
+    const lower = cmd.toLowerCase();
+    if(lower === 'help'){
+      appendLine('  [ HELP ] Available commands: help, status, uptime, whoami, clear', 'out');
+      appendLine('  [ HELP ] Tip: Use ↑ / ↓ for command history.', 'out');
+      return;
+    }
+
+    if(lower === 'clear'){
+      terminalOutput.innerHTML = '';
+      if(splash1){
+        splash1.textContent = '  [ INFO ] Terminal cleared';
+        splash1.style.color = 'rgba(0,212,255,0.55)';
+      }
+      return;
+    }
+
+    if(lower === 'status'){
+      const dbOk = Math.random() > 0.08;
+      const psOk = Math.random() > 0.06;
+      setLiveStatus({dbOk, psOk, sessOk:true});
+      appendLine(`  [ OK ] Status report generated`, 'ok');
+      return;
+    }
+
+    if(lower === 'uptime'){
+      const mins = 12 + Math.floor(Math.random()*900);
+      appendLine(`  [ OK ] Uptime: ${mins} minutes`, 'out');
+      return;
+    }
+
+    if(lower === 'whoami'){
+      appendLine(`  [ OK ] User: ${user}`, 'ok');
+      return;
+    }
+
+    appendLine(`  [ ERR ] Unknown command: ${cmd}`, 'err');
+  }
+
+  // Enter to run; keep terminal “active” focus
+  terminalInput?.focus();
+  terminalInput?.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      const v = terminalInput.value;
+      terminalInput.value = '';
+      runCommand(v);
+      terminalInput.focus();
+      return;
+    }
+
+    if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(history.length === 0) return;
+      historyIndex = Math.max(0, historyIndex - 1);
+      terminalInput.value = history[historyIndex] || '';
+      return;
+    }
+
+    if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(history.length === 0) return;
+      historyIndex = Math.min(history.length, historyIndex + 1);
+      terminalInput.value = historyIndex === history.length ? '' : (history[historyIndex] || '');
+      return;
+    }
+  });
+
+  // Scroll-safe when output grows
+  function keepTerminalPinned(){
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  // Make sure we append/scroll nicely when output changes
+  const mo = new MutationObserver(() => keepTerminalPinned());
+  mo.observe(terminalOutput, {childList:true});
+
+  // Small boot message
+  appendLine('  [ INFO ] Type "help" to see available commands.', 'out');
+
+
+
+  /* ---- CLOCK ---- */
+  function tick(){
+    document.getElementById('tbClock').textContent =
+      new Date().toLocaleTimeString('en-GB');
+  }
+  tick(); setInterval(tick,1000);
+
+  /* ---- LOGOUT ---- */
+  function logout(){
+    sessionStorage.removeItem('cx_user');
+    window.location.href='dev-login.html';
+  }
+
+  /* ---- SPARKLINE (placeholder; values to be fetched from DB/API) ---- */
+  const vals=[0,0,0,0,0,0,0];
+  const max=1;
+  const spark=document.getElementById('sparkline');
+  spark.innerHTML='';
+  vals.forEach((v,i)=>{
+    const b=document.createElement('div');
+    b.className='spark-bar';
+    b.style.height='0%';
+    spark.appendChild(b);
+    // Once API data is available, we will set heights here.
+  });
+
+  // TODO(DB/API): fetch values and populate:
+  // - ACTIVE PROJECTS -> [data-stat="activeProjects"]
+  // - PENDING ORDERS -> [data-stat="pendingOrders"]
+  // - COMPLETED JOBS -> [data-stat="completedJobs"]
+  // - UPTIME -> [data-stat="uptime"]
+  // - THIS WEEK orders -> #weeklyOrdersVal
+  // - activity logs -> .log-list
+
+
+
+  /* ---- CANVAS BACKGROUND (same grid + particles) ---- */
+  const canvas=document.getElementById('bg');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+  const GRID=60;
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    particles=[];
+    const count=Math.floor((W*H)/22000);
+    for(let i=0;i<count;i++)
+      particles.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+0.3,
+        vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,o:Math.random()*.4+.1});
+  }
+  let rings=[];
+  setInterval(()=>rings.push({x:Math.random()*W,y:Math.random()*H,r:0,o:.4}),4000);
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(0,212,255,0.04)';ctx.lineWidth=.5;
+    for(let x=0;x<W;x+=GRID){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    rings=rings.filter(r=>r.o>.01);
+    rings.forEach(r=>{
+      ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,212,255,${r.o})`;ctx.lineWidth=.7;ctx.stroke();
+      r.r+=1;r.o*=.97;
+    });
+    particles.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,212,255,${p.o})`;ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    const sy=(frame*0.8)%H;
+    const sg=ctx.createLinearGradient(0,sy-20,0,sy+20);
+    sg.addColorStop(0,'rgba(0,212,255,0)');
+    sg.addColorStop(.5,'rgba(0,212,255,0.025)');
+    sg.addColorStop(1,'rgba(0,212,255,0)');
+    ctx.fillStyle=sg;ctx.fillRect(0,sy-20,W,40);
+    frame++;requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+</script>
+</body>
+</html>
