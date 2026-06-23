@@ -96,6 +96,53 @@
     z-index:10;
   }
 
+  /* ---- MOBILE LAYOUT ---- */
+  @media (max-width: 900px){
+    #sidebar{width:200px;}
+    #main{left:200px;padding:22px 16px;}
+    .grid-4{grid-template-columns:repeat(2,1fr);}
+    .grid-3{grid-template-columns:1fr;}
+  }
+
+  @media (max-width: 520px){
+    html,body{overflow:hidden;}
+
+    /* Collapsible sidebar */
+    #sidebar{
+      width:100%;
+      left:0;
+      top:56px;
+      height:auto;
+      bottom:auto;
+      position:fixed;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+      padding:14px 0;
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+    }
+
+    #sidebar.open{transform:translateX(0);}
+
+    #main{
+      left:0;
+      top:56px;
+      padding:18px 14px;
+    }
+
+    .welcome-row{flex-direction:column;align-items:flex-start;gap:10px;}
+
+    /* Make terminal play nicely on small screens */
+    .terminal{height:220px;padding:12px 12px;}
+    .t-input-line{gap:6px;}
+
+    /* Reduce card density */
+    .grid-4{grid-template-columns:1fr;}
+    .grid-3{grid-template-columns:1fr;}
+  }
+
+
+
   /* ---- WELCOME HEADER ---- */
   .welcome-row{
     display:flex;align-items:flex-end;justify-content:space-between;
@@ -266,6 +313,7 @@
 
 <!-- SIDEBAR -->
 <div id="sidebar">
+
   <span class="nav-section-label">NAVIGATION</span>
   <div class="nav-item active"><span class="ni">⊞</span>DASHBOARD</div>
   <div class="nav-item"><span class="ni">◈</span>PROJECTS</div>
@@ -607,8 +655,141 @@
 
 
 
+  /* ---- MOBILE SIDEBAR (toggle) ---- */
+  (function initMobileSidebar(){
+    try{
+      if(!('matchMedia' in window)) return;
+      const btnId = 'mobileMenuBtn';
+      if(document.getElementById(btnId)) return;
+
+      // Add a menu button on small screens (topbar right side)
+      const topbar = document.getElementById('topbar');
+      const tbRight = topbar && topbar.querySelector('.tb-right');
+      if(!tbRight) return;
+
+      const btn = document.createElement('button');
+      btn.id = btnId;
+      btn.textContent = '≡ MENU';
+      btn.className = 'logout-btn';
+      btn.style.display = 'none';
+      btn.style.padding = '6px 12px';
+      btn.onclick = () => {
+        const sb = document.getElementById('sidebar');
+        sb && sb.classList.toggle('open');
+        // focus terminal input quickly after closing
+        if(sb && sb.classList.contains('open')) return;
+      };
+      tbRight.insertBefore(btn, tbRight.lastElementChild);
+
+      const media = window.matchMedia('(max-width: 520px)');
+      const apply = () => {
+        btn.style.display = media.matches ? 'inline-flex' : 'none';
+      };
+      apply();
+      media.addEventListener ? media.addEventListener('change', apply) : media.addListener(apply);
+
+      // Close sidebar when tapping a nav item
+      document.querySelectorAll('#sidebar .nav-item').forEach(item=>{
+        item.addEventListener('click', ()=>{
+          const sb = document.getElementById('sidebar');
+          if(sb && sb.classList.contains('open')) sb.classList.remove('open');
+        });
+      });
+    }catch(e){ /* no-op */ }
+  })();
+
+  /* ---- VOICE COMMAND (phones) ---- */
+  // Many mobile browsers don't allow speech recognition without a direct user gesture.
+  // This sets up a mic button inside the terminal header area.
+  (function initVoiceCommand(){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SpeechRecognition) return;
+
+    const btnId = 'voiceBtn';
+    if(document.getElementById(btnId)) return;
+
+    const tCard = document.getElementById('terminal');
+    const termSection = tCard && tCard.closest('.cx-card');
+    if(!termSection) return;
+
+    const btn = document.createElement('button');
+    btn.id = btnId;
+    btn.className = 'logout-btn';
+    btn.textContent = '🎙 VOICE';
+    btn.style.float = 'right';
+    btn.style.marginTop = '-2px';
+    btn.style.display = 'inline-flex';
+
+    // Add right next to SECTION label
+    const label = termSection.querySelector('.section-label');
+    if(label){
+      label.appendChild(btn);
+    } else {
+      termSection.insertBefore(btn, termSection.firstChild);
+    }
+
+    let recognising = false;
+    const rec = new SpeechRecognition();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = 'en-GB';
+
+    rec.onstart = () => {
+      recognising = true;
+      btn.style.borderColor = 'var(--green)';
+      btn.style.color = 'var(--green)';
+      btn.textContent = '◼ LISTENING…';
+    };
+    rec.onerror = () => {
+      recognising = false;
+      btn.style.borderColor = 'rgba(0,212,255,0.25)';
+      btn.style.color = 'rgba(0,212,255,0.6)';
+      btn.textContent = '🎙 VOICE';
+      appendLine('  [ WARN ] Voice recognition unavailable on this device/browser.', 'err');
+    };
+    rec.onend = () => {
+      recognising = false;
+      btn.style.borderColor = 'rgba(0,212,255,0.25)';
+      btn.style.color = 'rgba(0,212,255,0.6)';
+      btn.textContent = '🎙 VOICE';
+    };
+
+    rec.onresult = (ev) => {
+      const transcript = (ev.results && ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript) ?
+        ev.results[0][0].transcript : '';
+
+      const said = (transcript || '').trim();
+      if(!said) return;
+      appendLine(`  [ VOICE ] ${said}`, 'out');
+
+      // Map phrases to terminal commands
+      const t = said.toLowerCase();
+      const map = [
+        {re:/\bhelp\b/, cmd:'help'},
+        {re:/\bclear\b/, cmd:'clear'},
+        {re:/\bstatus\b/, cmd:'status'},
+        {re:/\buptime\b/, cmd:'uptime'},
+        {re:/\bwho am i\b|\bwhoami\b|\bwho's my\b|\bwho\s+am\s+i\b/, cmd:'whoami'}
+      ];
+      const found = map.find(m => m.re.test(t));
+      if(found) runCommand(found.cmd);
+      else appendLine(`  [ ERR ] Voice not mapped. Say: help / status / uptime / whoami / clear`, 'err');
+    };
+
+    btn.addEventListener('click', ()=>{
+      // Direct user gesture required on iOS/Android
+      try{
+        if(recognising){ rec.stop(); return; }
+        rec.start();
+      }catch(e){
+        appendLine('  [ ERR ] Could not start voice recognition. Try again.', 'err');
+      }
+    });
+  })();
+
   /* ---- CANVAS BACKGROUND (same grid + particles) ---- */
   const canvas=document.getElementById('bg');
+
   const ctx=canvas.getContext('2d');
   let W,H,particles=[];
   const GRID=60;
