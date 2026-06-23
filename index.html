@@ -1,25 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cognitix Digital — Creativity Meets Precision</title>
-<meta name="description" content="Cognitix Digital — graphic design and software/web development studio. Logos, brand kits, posters and mockups, plus websites, software and tech support.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognitix Digital — Creativity Meets Precision</title>
+  <meta name="description" content="Cognitix Digital — graphic design and software/web development studio. Logos, brand kits, posters and mockups, plus websites, software and tech support.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN (lightweight) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+      }
+    }
+  </script>
 
-<!-- Tailwind (CDN) -->
-<script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* reset & base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #0b0d15;
+      color: #f0f3fa;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    .wrap {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ---- header: nav to the right ---- */
+    #siteHeader {
+      position: relative;
+      z-index: 30;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(11,13,21,0.7);
+      backdrop-filter: blur(12px);
+    }
+    #siteHeader nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo .brand-logo {
+      height: 44px;
+      width: auto;
+      filter: drop-shadow(0 0 6px rgba(0,180,255,0.2));
+    }
+    /* navlinks - pushed to the right */
+    .navlinks {
+      display: flex;
+      gap: 2.2rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      margin-left: auto;  /* push to the right */
+      padding-right: 1rem;
+    }
+    .navlinks a {
+      color: #cdd6f4;
+      transition: 0.2s;
+      position: relative;
+    }
+    .navlinks a:hover { color: #a6e3ff; }
+
+    /* hide burger on desktop, show on mobile */
+    .burger {
+      display: none;
+      background: transparent;
+      border: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .burger span {
+      width: 26px;
+      height: 2.5px;
+      background: #e0e8f5;
+      border-radius: 4px;
+      transition: 0.25s;
+    }
+    .burger:hover span { background: #a6e3ff; }
+
+    /* floating WhatsApp button - bottom right */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      background: #25d366;
+      color: #0b0d15;
+      border-radius: 60px;
+      padding: 0.75rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 28px rgba(37, 211, 102, 0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.25s;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+    }
+    .whatsapp-float:hover {
+      background: #1ebe5a;
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+    }
+    .whatsapp-float svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    /* hide default nav-cta (we moved it) */
+    .nav-cta {
+      display: none;
+    }
+
+    /* hero */
+    .hero {
+      position: relative;
+      z-index: 10;
+      padding: 4rem 0 6rem 0;
+      overflow: hidden;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+    }
+    .hero .wrap { position: relative; z-index: 15; width: 100%; }
+    .hero-inner { max-width: 780px; }
+    .eyebrow {
+      display: inline-block;
+      background: rgba(0,180,255,0.12);
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #7fd1ff;
+      margin-bottom: 1.2rem;
+      border: 1px solid rgba(0,180,255,0.15);
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 4.2rem;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #f0f6ff 0%, #b8dfff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lead {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: #bbc8e0;
+      max-width: 620px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .btn-primary {
+      background: #2b7fff;
+      color: #fff;
+      border-color: #2b7fff;
+      padding: 0.65rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      transition: 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover {
+      background: #1a6be8;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(43,127,255,0.25);
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #d6e2ff;
+      padding: 0.65rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      transition: 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-ghost:hover {
+      border-color: #2b7fff;
+      background: rgba(43,127,255,0.08);
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #8896b0;
+      letter-spacing: 0.3px;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .hero-tags span { display: flex; align-items: center; gap: 6px; }
+    .hero-tags span::before {
+      content: "✦";
+      color: #2b7fff;
+      font-size: 0.65rem;
+    }
+    .side-tag {
+      position: absolute;
+      right: 3rem;
+      top: 3rem;
+      transform: rotate(90deg) translateY(-50%);
+      transform-origin: right center;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      color: #4a5a7a;
+      font-weight: 500;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    /* three canvas */
+    #three-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 3.2rem; }
+      .navlinks {
+        display: none; /* hidden by default on mobile, toggled by burger */
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: #0b0d15;
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid #2a2f44;
+        margin-left: 0;
+        padding-right: 2rem;
+      }
+      .navlinks.open {
+        display: flex;
+      }
+      .burger {
+        display: flex; /* show burger on mobile */
+      }
+      .side-tag { display: none; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.6rem; }
+      .wrap { padding: 0 1.2rem; }
+      .hero { padding: 2rem 0 4rem; }
+      .whatsapp-float {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+        bottom: 1.2rem;
+        right: 1.2rem;
+      }
+      .whatsapp-float span { display: none; } /* hide text on small screens, keep icon */
+    }
+  </style>
 </head>
 <body>
 
 <header id="siteHeader">
   <nav class="wrap">
-<div class="logo">
-      <img class="brand-logo" src="assets/images/brand_logo_1.png" alt="Cognitix Digital logo" />
+    <div class="logo">
+      <img class="brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Ctext x='0' y='40' font-family='Poppins, sans-serif' font-weight='700' font-size='32' fill='%23f0f6ff' letter-spacing='1'%3ECognitix%3C/text%3E%3Ctext x='150' y='40' font-family='Poppins, sans-serif' font-weight='600' font-size='18' fill='%234a9eff'%3EDigital%3C/text%3E%3C/svg%3E" alt="Cognitix Digital logo" style="height:44px; width:auto;" />
     </div>
+    <!-- navlinks pushed to right via margin-left:auto -->
     <div class="navlinks" id="navLinks">
       <a href="index.html">Home</a>
       <a href="services.html">Services</a>
@@ -27,62 +310,303 @@
       <a href="process.html">Process</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-
     </div>
-    <div class="nav-cta">
-      <a class="btn btn-whatsapp" href="https://wa.me/254705557706" target="_blank" rel="noopener"><span class="btn-text">Chat on WhatsApp</span><span aria-hidden="true">→</span></a>
-      <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+    <!-- burger (hidden on desktop) -->
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 </header>
 
-<main class="page-content">
+<!-- Floating WhatsApp button - bottom right -->
+<a class="whatsapp-float" href="https://wa.me/254705557706" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span>Chat on WhatsApp</span>
+</a>
 
-<section class="hero">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-  <span class="side-tag">DIGITAL STUDIO · NAIROBI</span>
-  <div class="wrap">
-    <div class="hero-inner">
-      <span class="eyebrow">CREATIVE &amp; TECH STUDIO</span>
-      <h1>Creativity meets precision.</h1>
-      <p class="lead">Cognitix Digital designs the things people see first — logos, brand kits, posters, mockups — and builds the things that make a business run: websites, software and the support behind them.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary" href="work.html">View the work</a>
-        <a class="btn btn-ghost" href="contact.html">Start a project</a>
-      </div>
-      <div class="hero-tags">
-        <span>Brand &amp; Graphic Design</span>
-        <span>Web &amp; Software Dev</span>
-        <span>Tech Support &amp; Maintenance</span>
+<main class="page-content">
+  <section class="hero" id="heroSection">
+    <span class="side-tag">DIGITAL STUDIO · NAIROBI</span>
+    <div class="wrap">
+      <div class="hero-inner">
+        <span class="eyebrow">CREATIVE &amp; TECH STUDIO</span>
+        <h1>Creativity meets precision.</h1>
+        <p class="lead">Cognitix Digital designs the things people see first — logos, brand kits, posters, mockups — and builds the things that make a business run: websites, software and the support behind them.</p>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="work.html">View the work</a>
+          <a class="btn-ghost" href="contact.html">Start a project</a>
+        </div>
+        <div class="hero-tags">
+          <span>Brand &amp; Graphic Design</span>
+          <span>Web &amp; Software Dev</span>
+          <span>Tech Support &amp; Maintenance</span>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-
-
+  </section>
 </main>
 
+<script type="module">
+  import * as THREE from 'three';
 
+  // --- setup scene ---
+  const container = document.getElementById('heroSection');
+  const canvas = document.createElement('canvas');
+  canvas.id = 'three-canvas';
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.display = 'block';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '2';
+  container.prepend(canvas);
 
-<script src="js/script.js"></script>
+  const scene = new THREE.Scene();
+  scene.background = null;
 
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(0, 1.5, 10);
+  camera.lookAt(0, 0, 0);
 
+  const renderer = new THREE.WebGLRenderer({ 
+    canvas, 
+    alpha: true, 
+    antialias: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // --- lights ---
+  const ambient = new THREE.AmbientLight(0x404060);
+  scene.add(ambient);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(2, 5, 5);
+  scene.add(dirLight);
+  const backLight = new THREE.DirectionalLight(0x4a9eff, 0.8);
+  backLight.position.set(-3, 1, -4);
+  scene.add(backLight);
+  const fillLight = new THREE.PointLight(0x2b7fff, 0.6, 15);
+  fillLight.position.set(1, 0, 3);
+  scene.add(fillLight);
+
+  // --- objects ---
+  const group = new THREE.Group();
+
+  const geo1 = new THREE.IcosahedronGeometry(0.9, 0);
+  const mat1 = new THREE.MeshStandardMaterial({
+    color: 0x4a9eff,
+    emissive: 0x123355,
+    roughness: 0.25,
+    metalness: 0.6,
+    transparent: true,
+    opacity: 0.75,
+  });
+  const mesh1 = new THREE.Mesh(geo1, mat1);
+  mesh1.position.set(-2.2, 0.6, -1.2);
+  group.add(mesh1);
+
+  const geo2 = new THREE.TorusKnotGeometry(0.7, 0.25, 80, 12);
+  const mat2 = new THREE.MeshStandardMaterial({
+    color: 0xff7b9c,
+    emissive: 0x551a2a,
+    roughness: 0.3,
+    metalness: 0.4,
+    transparent: true,
+    opacity: 0.7
+  });
+  const mesh2 = new THREE.Mesh(geo2, mat2);
+  mesh2.position.set(2.6, -0.3, -1.8);
+  group.add(mesh2);
+
+  const geo3 = new THREE.OctahedronGeometry(0.8);
+  const mat3 = new THREE.MeshStandardMaterial({
+    color: 0x6cffb0,
+    emissive: 0x144a33,
+    roughness: 0.2,
+    metalness: 0.7,
+    transparent: true,
+    opacity: 0.65
+  });
+  const mesh3 = new THREE.Mesh(geo3, mat3);
+  mesh3.position.set(0.5, 1.8, 0.3);
+  group.add(mesh3);
+
+  const geo4 = new THREE.DodecahedronGeometry(0.65);
+  const mat4 = new THREE.MeshStandardMaterial({
+    color: 0xffb347,
+    emissive: 0x55301a,
+    roughness: 0.4,
+    metalness: 0.2,
+    transparent: true,
+    opacity: 0.7
+  });
+  const mesh4 = new THREE.Mesh(geo4, mat4);
+  mesh4.position.set(-1.3, -1.2, 1.5);
+  group.add(mesh4);
+
+  const geo5 = new THREE.SphereGeometry(0.45, 24, 24);
+  const mat5 = new THREE.MeshStandardMaterial({
+    color: 0x9f7aff,
+    emissive: 0x2a1a55,
+    roughness: 0.1,
+    metalness: 0.3
+  });
+  const mesh5 = new THREE.Mesh(geo5, mat5);
+  mesh5.position.set(1.9, 1.4, 0.8);
+  group.add(mesh5);
+
+  const geo6 = new THREE.TorusGeometry(0.7, 0.15, 28, 32);
+  const mat6 = new THREE.MeshStandardMaterial({
+    color: 0x4ad9ff,
+    emissive: 0x003344,
+    roughness: 0.2,
+    metalness: 0.8,
+    transparent: true,
+    opacity: 0.6
+  });
+  const mesh6 = new THREE.Mesh(geo6, mat6);
+  mesh6.position.set(-0.7, -0.8, -2.2);
+  mesh6.rotation.x = 0.8;
+  mesh6.rotation.y = 0.3;
+  group.add(mesh6);
+
+  const geo7 = new THREE.IcosahedronGeometry(0.5, 0);
+  const mat7 = new THREE.MeshStandardMaterial({
+    color: 0xff6b6b,
+    emissive: 0x551111,
+    roughness: 0.3,
+    metalness: 0.5,
+    transparent: true,
+    opacity: 0.7
+  });
+  const mesh7 = new THREE.Mesh(geo7, mat7);
+  mesh7.position.set(-2.8, -0.9, 0.5);
+  group.add(mesh7);
+
+  scene.add(group);
+
+  // stars
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 180;
+  const positions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 18;
+    positions[i+1] = (Math.random() - 0.5) * 12;
+    positions[i+2] = (Math.random() - 0.5) * 10 - 4;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const starMat = new THREE.PointsMaterial({
+    color: 0x88bbff,
+    size: 0.08,
+    transparent: true,
+    opacity: 0.5,
+    blending: THREE.AdditiveBlending
+  });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  // mouse
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+  document.addEventListener('mousemove', (event) => {
+    const rect = container.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    mouseX = x * 2;
+    mouseY = -y * 1.5;
+  });
+
+  function resizeRenderer() {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resizeRenderer);
+
+  let clock = new THREE.Clock();
+  function animate() {
+    const delta = clock.getDelta();
+    const elapsed = performance.now() * 0.0008;
+
+    targetX += (mouseX - targetX) * 0.04;
+    targetY += (mouseY - targetY) * 0.04;
+
+    group.rotation.x += 0.0012;
+    group.rotation.y += 0.0025;
+    group.rotation.z += 0.0006;
+
+    mesh1.rotation.x += 0.01;
+    mesh1.rotation.y += 0.02;
+    mesh1.position.y = 0.6 + Math.sin(elapsed * 0.9) * 0.25;
+
+    mesh2.rotation.x += 0.015;
+    mesh2.rotation.y += 0.025;
+    mesh2.position.y = -0.3 + Math.sin(elapsed * 0.7 + 1) * 0.3;
+
+    mesh3.rotation.x += 0.008;
+    mesh3.rotation.y += 0.018;
+    mesh3.position.y = 1.8 + Math.sin(elapsed * 0.5 + 2) * 0.2;
+
+    mesh4.rotation.x += 0.012;
+    mesh4.rotation.y += 0.02;
+    mesh4.position.y = -1.2 + Math.sin(elapsed * 0.6 + 0.5) * 0.25;
+
+    mesh5.rotation.x += 0.005;
+    mesh5.rotation.y += 0.01;
+    mesh5.position.y = 1.4 + Math.sin(elapsed * 0.8 + 1.2) * 0.2;
+
+    mesh6.rotation.z += 0.01;
+    mesh6.rotation.y += 0.02;
+    mesh6.position.y = -0.8 + Math.sin(elapsed * 0.4 + 0.3) * 0.2;
+
+    mesh7.rotation.x += 0.02;
+    mesh7.rotation.y += 0.025;
+    mesh7.position.y = -0.9 + Math.sin(elapsed * 0.7 + 0.8) * 0.2;
+
+    stars.rotation.y += 0.0002;
+
+    camera.position.x = 0 + targetX * 0.5;
+    camera.position.y = 1.5 + targetY * 0.3;
+    camera.lookAt(0, 0.2, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+  resizeRenderer();
+
+  // --- burger toggle (mobile only) ---
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+    const expanded = navLinks.classList.contains('open');
+    burger.setAttribute('aria-expanded', expanded);
+  });
+
+  // close nav on link click (mobile)
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // reset on resize to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      navLinks.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>
 
 </body>
 </html>
-
-

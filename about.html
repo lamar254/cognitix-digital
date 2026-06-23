@@ -1,21 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cognitix Digital — About</title>
-<meta name="description" content="About Cognitix Digital: one-person creative and technical studio combining design and engineering.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognitix Digital — About</title>
+  <meta name="description" content="About Cognitix Digital: one-person creative and technical studio combining design and engineering.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <style>
+    /* reset & base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #0b0d15;
+      color: #f0f3fa;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    .wrap {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ---- header: nav to the right ---- */
+    #siteHeader {
+      position: relative;
+      z-index: 30;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(11,13,21,0.7);
+      backdrop-filter: blur(12px);
+    }
+    #siteHeader nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo .brand-logo {
+      height: 44px;
+      width: auto;
+      filter: drop-shadow(0 0 6px rgba(0,180,255,0.2));
+    }
+    .navlinks {
+      display: flex;
+      gap: 2.2rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      margin-left: auto;
+      padding-right: 1rem;
+    }
+    .navlinks a {
+      color: #cdd6f4;
+      transition: 0.2s;
+      position: relative;
+    }
+    .navlinks a:hover { color: #a6e3ff; }
+
+    /* burger hidden on desktop */
+    .burger {
+      display: none;
+      background: transparent;
+      border: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .burger span {
+      width: 26px;
+      height: 2.5px;
+      background: #e0e8f5;
+      border-radius: 4px;
+      transition: 0.25s;
+    }
+    .burger:hover span { background: #a6e3ff; }
+
+    /* floating WhatsApp button - bottom right */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      background: #25d366;
+      color: #0b0d15;
+      border-radius: 60px;
+      padding: 0.75rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 28px rgba(37, 211, 102, 0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.25s;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+    }
+    .whatsapp-float:hover {
+      background: #1ebe5a;
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+    }
+    .whatsapp-float svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    .nav-cta {
+      display: none;
+    }
+
+    /* about section */
+    .about {
+      position: relative;
+      z-index: 10;
+      padding: 5rem 0 7rem 0;
+      overflow: hidden;
+      min-height: 70vh;
+    }
+    .about .wrap { position: relative; z-index: 15; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .about-visual {
+      aspect-ratio: 4/3;
+      border-radius: 32px;
+      background: radial-gradient(circle at 30% 40%, rgba(43,127,255,0.15), rgba(11,13,21,0.8));
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-visual::after {
+      content: "✦";
+      font-size: 8rem;
+      color: rgba(74,158,255,0.08);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .about-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      background: rgba(0,180,255,0.12);
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #7fd1ff;
+      width: fit-content;
+      border: 1px solid rgba(0,180,255,0.15);
+    }
+    .about-copy h2 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 3.2rem;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0f6ff 0%, #b8dfff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-copy p {
+      color: #bbc8e0;
+      line-height: 1.7;
+      font-size: 1.1rem;
+      max-width: 540px;
+    }
+    .stack-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 1.2rem;
+      margin-top: 0.8rem;
+    }
+    .stack-row span {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #cdd6f4;
+      letter-spacing: 0.3px;
+    }
+    .stack-row span:hover {
+      background: rgba(43,127,255,0.08);
+      border-color: rgba(43,127,255,0.15);
+    }
+
+    /* three canvas */
+    #three-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .navlinks {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: #0b0d15;
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid #2a2f44;
+        margin-left: 0;
+        padding-right: 2rem;
+      }
+      .navlinks.open { display: flex; }
+      .burger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-copy h2 { font-size: 2.6rem; }
+      .about-visual { aspect-ratio: 4/3; }
+    }
+    @media (max-width: 600px) {
+      .about-copy h2 { font-size: 2.2rem; }
+      .wrap { padding: 0 1.2rem; }
+      .about { padding: 3rem 0 5rem; }
+      .about-grid { gap: 2rem; }
+      .about-visual { aspect-ratio: 4/3; }
+      .about-copy p { font-size: 1rem; }
+      .whatsapp-float {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+        bottom: 1.2rem;
+        right: 1.2rem;
+      }
+      .whatsapp-float span { display: none; }
+    }
+  </style>
 </head>
 <body>
 
 <header id="siteHeader">
   <nav class="wrap">
-        <div class="logo">
-      <img class="brand-logo" src="assets/images/brand_logo_1.png" alt="Cognitix Digital logo" />
+    <div class="logo">
+      <img class="brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Ctext x='0' y='40' font-family='Poppins, sans-serif' font-weight='700' font-size='32' fill='%23f0f6ff' letter-spacing='1'%3ECognitix%3C/text%3E%3Ctext x='150' y='40' font-family='Poppins, sans-serif' font-weight='600' font-size='18' fill='%234a9eff'%3EDigital%3C/text%3E%3C/svg%3E" alt="Cognitix Digital logo" style="height:44px; width:auto;" />
     </div>
     <div class="navlinks" id="navLinks">
       <a href="index.html">Home</a>
@@ -24,44 +288,284 @@
       <a href="process.html">Process</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-
     </div>
-    <div class="nav-cta">
-      <a class="btn btn-whatsapp" href="https://wa.me/254705557706" target="_blank" rel="noopener"><span class="btn-text">Chat on WhatsApp</span><span aria-hidden="true">→</span></a>
-      <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 </header>
 
-<main class="page-content">
+<!-- Floating WhatsApp button -->
+<a class="whatsapp-float" href="https://wa.me/254705557706" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span>Chat on WhatsApp</span>
+</a>
 
-<section class="about" id="about">
-  <div class="wrap about-grid">
-    <div class="about-visual reveal"></div>
-    <div class="about-copy reveal">
-      <span class="eyebrow">ABOUT</span>
-      <h2>Who's behind Cognitix Digital</h2>
-      <p>Cognitix Digital is a one-person creative and technical studio that treats design and engineering as one discipline, not two. Brand identities, posters, mockups and apparel art on one side; websites, software builds and the tech support that keeps a business running on the other.</p>
-      <p>The thread between them is the same: clear thinking, clean execution, and follow-through after the project ships.</p>
-      <div class="stack-row">
-        <span>Brand Identity</span>
-        <span>UI/UX</span>
-        <span>Web Development</span>
-        <span>Software Development</span>
-        <span>Systems Support</span>
+<main class="page-content">
+  <section class="about" id="aboutSection">
+    <div class="wrap about-grid">
+      <div class="about-visual"></div>
+      <div class="about-copy">
+        <span class="eyebrow">ABOUT</span>
+        <h2>Who's behind Cognitix Digital</h2>
+        <p>Cognitix Digital is a one-person creative and technical studio that treats design and engineering as one discipline, not two. Brand identities, posters, mockups and apparel art on one side; websites, software builds and the tech support that keeps a business running on the other.</p>
+        <p>The thread between them is the same: clear thinking, clean execution, and follow-through after the project ships.</p>
+        <div class="stack-row">
+          <span>Brand Identity</span>
+          <span>UI/UX</span>
+          <span>Web Development</span>
+          <span>Software Development</span>
+          <span>Systems Support</span>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
+<script type="module">
+  import * as THREE from 'three';
 
+  // --- setup scene ---
+  const container = document.getElementById('aboutSection');
+  const canvas = document.createElement('canvas');
+  canvas.id = 'three-canvas';
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.display = 'block';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '2';
+  container.prepend(canvas);
 
-<script src="js/script.js"></script>
+  const scene = new THREE.Scene();
+  scene.background = null;
 
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(0, 1.5, 10);
+  camera.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ 
+    canvas, 
+    alpha: true, 
+    antialias: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // --- lights ---
+  const ambient = new THREE.AmbientLight(0x404060);
+  scene.add(ambient);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(2, 5, 5);
+  scene.add(dirLight);
+  const backLight = new THREE.DirectionalLight(0x4a9eff, 0.8);
+  backLight.position.set(-3, 1, -4);
+  scene.add(backLight);
+  const fillLight = new THREE.PointLight(0x2b7fff, 0.6, 15);
+  fillLight.position.set(1, 0, 3);
+  scene.add(fillLight);
+
+  // --- objects (about themed - mixed shapes) ---
+  const group = new THREE.Group();
+
+  // Icosahedron
+  const icoGeo = new THREE.IcosahedronGeometry(0.85, 0);
+  const icoMat = new THREE.MeshStandardMaterial({
+    color: 0x4a9eff,
+    emissive: 0x123355,
+    roughness: 0.2,
+    metalness: 0.6,
+    transparent: true,
+    opacity: 0.75
+  });
+  const ico = new THREE.Mesh(icoGeo, icoMat);
+  ico.position.set(-2.0, 0.9, -0.8);
+  group.add(ico);
+
+  // Torus knot
+  const knotGeo = new THREE.TorusKnotGeometry(0.7, 0.25, 80, 12);
+  const knotMat = new THREE.MeshStandardMaterial({
+    color: 0xff7b9c,
+    emissive: 0x551a2a,
+    roughness: 0.3,
+    metalness: 0.4,
+    transparent: true,
+    opacity: 0.7
+  });
+  const knot = new THREE.Mesh(knotGeo, knotMat);
+  knot.position.set(2.3, -0.1, -1.6);
+  group.add(knot);
+
+  // Dodecahedron
+  const dodGeo = new THREE.DodecahedronGeometry(0.75);
+  const dodMat = new THREE.MeshStandardMaterial({
+    color: 0x6cffb0,
+    emissive: 0x144a33,
+    roughness: 0.3,
+    metalness: 0.3,
+    transparent: true,
+    opacity: 0.65
+  });
+  const dod = new THREE.Mesh(dodGeo, dodMat);
+  dod.position.set(0.4, 1.8, 0.5);
+  group.add(dod);
+
+  // Octahedron
+  const octGeo = new THREE.OctahedronGeometry(0.7);
+  const octMat = new THREE.MeshStandardMaterial({
+    color: 0xffb347,
+    emissive: 0x55301a,
+    roughness: 0.35,
+    metalness: 0.2,
+    transparent: true,
+    opacity: 0.7
+  });
+  const oct = new THREE.Mesh(octGeo, octMat);
+  oct.position.set(-1.4, -1.0, 1.7);
+  group.add(oct);
+
+  // Sphere
+  const sphGeo = new THREE.SphereGeometry(0.5, 24, 24);
+  const sphMat = new THREE.MeshStandardMaterial({
+    color: 0x9f7aff,
+    emissive: 0x2a1a55,
+    roughness: 0.1,
+    metalness: 0.3
+  });
+  const sph = new THREE.Mesh(sphGeo, sphMat);
+  sph.position.set(1.8, 1.3, 0.4);
+  group.add(sph);
+
+  // Torus ring
+  const ringGeo = new THREE.TorusGeometry(0.8, 0.15, 28, 32);
+  const ringMat = new THREE.MeshStandardMaterial({
+    color: 0x4ad9ff,
+    emissive: 0x003344,
+    roughness: 0.2,
+    metalness: 0.7,
+    transparent: true,
+    opacity: 0.6
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.position.set(-0.6, -0.9, -2.1);
+  ring.rotation.x = 0.8;
+  ring.rotation.y = 0.3;
+  group.add(ring);
+
+  scene.add(group);
+
+  // stars
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 160;
+  const positions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 18;
+    positions[i+1] = (Math.random() - 0.5) * 12;
+    positions[i+2] = (Math.random() - 0.5) * 10 - 4;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const starMat = new THREE.PointsMaterial({
+    color: 0x88bbff,
+    size: 0.07,
+    transparent: true,
+    opacity: 0.4,
+    blending: THREE.AdditiveBlending
+  });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  // mouse
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+  document.addEventListener('mousemove', (event) => {
+    const rect = container.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    mouseX = x * 2;
+    mouseY = -y * 1.5;
+  });
+
+  function resizeRenderer() {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resizeRenderer);
+
+  let clock = new THREE.Clock();
+  function animate() {
+    const elapsed = performance.now() * 0.0008;
+
+    targetX += (mouseX - targetX) * 0.04;
+    targetY += (mouseY - targetY) * 0.04;
+
+    group.rotation.x += 0.001;
+    group.rotation.y += 0.002;
+    group.rotation.z += 0.0005;
+
+    ico.rotation.x += 0.012;
+    ico.rotation.y += 0.018;
+    ico.position.y = 0.9 + Math.sin(elapsed * 0.9) * 0.25;
+
+    knot.rotation.x += 0.015;
+    knot.rotation.y += 0.022;
+    knot.position.y = -0.1 + Math.sin(elapsed * 0.7 + 1) * 0.3;
+
+    dod.rotation.x += 0.008;
+    dod.rotation.y += 0.014;
+    dod.position.y = 1.8 + Math.sin(elapsed * 0.5 + 2) * 0.2;
+
+    oct.rotation.x += 0.012;
+    oct.rotation.y += 0.018;
+    oct.position.y = -1.0 + Math.sin(elapsed * 0.6 + 0.5) * 0.25;
+
+    sph.rotation.x += 0.006;
+    sph.rotation.y += 0.01;
+    sph.position.y = 1.3 + Math.sin(elapsed * 0.8 + 1.2) * 0.2;
+
+    ring.rotation.z += 0.01;
+    ring.rotation.y += 0.018;
+    ring.position.y = -0.9 + Math.sin(elapsed * 0.4 + 0.3) * 0.2;
+
+    stars.rotation.y += 0.0002;
+
+    camera.position.x = 0 + targetX * 0.5;
+    camera.position.y = 1.5 + targetY * 0.3;
+    camera.lookAt(0, 0.2, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+  resizeRenderer();
+
+  // --- burger toggle ---
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+    burger.setAttribute('aria-expanded', navLinks.classList.contains('open'));
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      navLinks.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>
 
 </body>
 </html>
-
-
