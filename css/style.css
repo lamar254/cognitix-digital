@@ -65,7 +65,7 @@ body{
   }
 
   img{max-width:100%; display:block;}
-  a{color:inherit;}
+  a{color:inherit; text-decoration:none;}
   h1,h2,h3{font-family:'Poppins',sans-serif; margin:0; line-height:1.08;}
   .wrap{max-width:1160px; margin:0 auto; padding:0 28px;}
   section{position:relative;}
@@ -121,6 +121,36 @@ body{
     box-shadow:0 14px 28px -10px rgba(26,166,76,0.55);
   }
 
+  /* ---------- FLOATING WHATSAPP BUTTON ---------- */
+  .whatsapp-float{
+    position:fixed;
+    bottom:2rem; right:2rem;
+    z-index:999;
+    background:#25D366;
+    color:#0b0d15;
+    border-radius:60px;
+    padding:0.75rem 1.6rem;
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    font-weight:600;
+    font-size:0.95rem;
+    box-shadow:0 8px 28px rgba(37,211,102,0.35);
+    border:1px solid rgba(255,255,255,0.1);
+    transition:.25s;
+    text-decoration:none;
+  }
+  .whatsapp-float:hover{
+    background:#1ebe5a;
+    transform:scale(1.05);
+    box-shadow:0 12px 32px rgba(37,211,102,0.5);
+  }
+  .whatsapp-float svg{
+    width:22px; height:22px;
+    fill:currentColor;
+    flex-shrink:0;
+  }
+
   /* ---------- NAV ---------- */
   header{
     position:sticky; top:0; z-index:50;
@@ -134,7 +164,7 @@ body{
     box-shadow:0 2px 20px rgba(14,15,43,0.08);
   }
   nav.wrap{display:flex; align-items:center; justify-content:space-between;}
-.logo{display:flex; align-items:center; gap:0; user-select:none;}
+.logo{display:flex; align-items:center; gap:10px; user-select:none;}
 
 /* Footer logo sizing */
 .footer .brand-logo{width:120px; height:120px; object-fit:contain;}
@@ -148,19 +178,17 @@ body{
   header.scrolled .logo-text{color:var(--ink);}
   .logo:not(.scrolled-logo) .logo-text{color:var(--ink);}
   .logo-badge{
-    position:relative;
-    width:46px;height:46px;
+    width:42px;height:42px;
     background:#fff;
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 16px rgba(14,15,43,0.18);
-    margin-left:-6px;
     flex-shrink:0;
   }
   .logo-x{
     font-family:'Poppins',sans-serif;
     font-weight:800;
-    font-size:22px;
+    font-size:20px;
     font-style:italic;
     background:linear-gradient(160deg,#6FB6FF, var(--blue) 60%, #16266B);
     -webkit-background-clip:text;
@@ -168,16 +196,13 @@ body{
     color:transparent;
   }
   .logo-digital{
-    position:absolute;
-    right:1px; top:50%;
-    transform:translateY(-50%);
-    writing-mode:vertical-rl;
     font-family:'JetBrains Mono',monospace;
-    font-size:5.5px;
-    letter-spacing:1px;
+    font-size:11px;
+    letter-spacing:2px;
     font-weight:600;
     color:var(--ink-soft);
   }
+  @media (max-width:480px){ .logo-digital{display:none;} }
 .navlinks{display:flex; align-items:center; gap:34px; margin-left:auto;}
   .navlinks a{
     font-weight:600; font-size:15px; text-decoration:none; color:var(--ink);
@@ -316,8 +341,7 @@ body{
     cursor:default;
     transition:transform .35s ease;
   }
-  .hex-tile:nth-child(3n+2){transform:translateY(38px);}
-  .hex-tile:hover{transform:scale(1.035) translateY(0);}
+  .hex-tile:hover{transform:scale(1.035);}
   .hex-tile img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
   .hex-tile:hover img{transform:scale(1.08);}
   .hex-overlay{
@@ -516,7 +540,6 @@ footer.footer{background:#12122a; color:rgba(255,255,255,0.72); padding:22px 0 1
     .nav-cta{display:none;}
     .form-row{grid-template-columns:1fr;}
     .hex-tile{width:78vw;}
-    .hex-tile:nth-child(3n+2){transform:translateY(0);}
     .hero-inner{max-width:100%;}
     .about-visual{max-width:280px;}
   }
