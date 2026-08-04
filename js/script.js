@@ -1,3 +1,7 @@
+// Footer year
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+
 // Sticky header background
 const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', () => {

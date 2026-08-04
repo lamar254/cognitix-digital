@@ -21,7 +21,14 @@
   html{scroll-behavior:smooth;}
 body{
     margin:0;
-    background:var(--paper);
+
+    /* Modern white glass background */
+    background:
+      radial-gradient(1200px 600px at 10% 0%, rgba(94,84,200,0.14), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(52,214,194,0.12), transparent 55%),
+      radial-gradient(700px 450px at 40% 90%, rgba(242,185,43,0.10), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+
     color:var(--ink);
     font-family:'Manrope', sans-serif;
     line-height:1.6;
@@ -31,6 +38,25 @@ body{
     min-height:100vh;
     display:flex;
     flex-direction:column;
+  }
+
+  /* Global glass overlay helper */
+  .glass{
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(14,15,43,0.10);
+    box-shadow:0 16px 40px rgba(14,15,43,0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* Ensure sections use glass when they look like cards */
+  .svc-card,
+  .step,
+  .contact-card{
+    background:rgba(255,255,255,0.6);
+    border:1px solid rgba(14,15,43,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 
   main.page-content{
