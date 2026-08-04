@@ -33,6 +33,7 @@ body{
     font-family:'Manrope', sans-serif;
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
 
     /* Sticky footer layout */
     min-height:100vh;
@@ -496,6 +497,7 @@ footer.footer{background:#12122a; color:rgba(255,255,255,0.72); padding:22px 0 1
     .about-grid{grid-template-columns:1fr; gap:40px;}
     .about-visual{max-width:340px; margin:0 auto;}
     .contact-grid{grid-template-columns:1fr;}
+    .hex-tile{width:44vw;}
   }
 
   @media (max-width:760px){
@@ -511,18 +513,30 @@ footer.footer{background:#12122a; color:rgba(255,255,255,0.72); padding:22px 0 1
     }
     .navlinks.open{display:flex;}
     .burger{display:block;}
-    .nav-cta .btn span.btn-text{display:none;}
+    .nav-cta{display:none;}
     .form-row{grid-template-columns:1fr;}
     .hex-tile{width:78vw;}
     .hex-tile:nth-child(3n+2){transform:translateY(0);}
+    .hero-inner{max-width:100%;}
+    .about-visual{max-width:280px;}
   }
 
   @media (max-width:540px){
     .hero{padding:70px 0 90px;}
     .services, .work, .process, .about, .contact{padding:80px 0;}
     .steps{grid-template-columns:1fr;}
+    .logo-text{font-size:20px;}
+    .logo-badge{width:38px; height:38px;}
+    .logo-x{font-size:18px;}
+    .whatsapp-float{padding:0.6rem 1rem; font-size:0.85rem; bottom:1.2rem; right:1.2rem;}
+    .whatsapp-float span{display:none;}
 
     footer.footer{padding:18px 0 16px;}
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-social{gap:12px;}
+  }
+
+  @media (max-width:400px){
+    .wrap{padding:0 18px;}
+    .hero{padding:60px 0 70px;}
   }
