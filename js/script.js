@@ -44,6 +44,21 @@ if ('IntersectionObserver' in window) {
   revealEls.forEach(el => el.classList.add('show'));
 }
 
+// Hero blob parallax on pointer move
+const hero = document.getElementById('heroSection');
+if (hero && window.matchMedia('(prefers-reduced-motion: reduce)').matches === false) {
+  const blobs = hero.querySelectorAll('.blob');
+  hero.addEventListener('mousemove', (e) => {
+    const { innerWidth, innerHeight } = window;
+    const x = (e.clientX / innerWidth - 0.5) * 2;
+    const y = (e.clientY / innerHeight - 0.5) * 2;
+    blobs.forEach((blob, i) => {
+      const strength = 14 + i * 8;
+      blob.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+    });
+  });
+}
+
 // Contact form -> WhatsApp (only exists on contact.html)
 const form = document.getElementById('contactForm');
 if (form) {
