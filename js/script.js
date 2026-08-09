@@ -2,6 +2,27 @@
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+// WhatsApp number, kept out of the HTML/JS source as plain text
+const WA_NUMBER = [50, 53, 52, 55, 48, 53, 53, 53, 55, 55, 48, 54]
+  .map((code) => String.fromCharCode(code))
+  .join('');
+const WA_DISPLAY = `+${WA_NUMBER.slice(0, 3)} ${WA_NUMBER.slice(3, 6)} ${WA_NUMBER.slice(6, 9)} ${WA_NUMBER.slice(9)}`;
+const WA_MASKED = `+${WA_NUMBER.slice(0, 3)} 7•• ••• •••`;
+
+document.querySelectorAll('.js-wa-link').forEach((link) => {
+  link.href = `https://wa.me/${WA_NUMBER}`;
+});
+
+const waNumberBtn = document.getElementById('waNumber');
+if (waNumberBtn) {
+  waNumberBtn.textContent = WA_MASKED;
+  waNumberBtn.addEventListener('click', () => {
+    const revealed = waNumberBtn.classList.toggle('revealed');
+    waNumberBtn.textContent = revealed ? WA_DISPLAY : WA_MASKED;
+    waNumberBtn.setAttribute('aria-label', revealed ? 'WhatsApp number revealed' : 'Click to reveal WhatsApp number');
+  });
+}
+
 // Sticky header background
 const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', () => {
@@ -76,7 +97,7 @@ if (form) {
     message += `Details: ${details}\n`;
     message += `Reach me at: ${phone}`;
 
-    const url = `https://wa.me/254705557706?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   });
 }
