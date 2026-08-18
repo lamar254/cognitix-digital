@@ -30,9 +30,7 @@
 <header id="siteHeader">
   <nav class="wrap">
     <a href="#top" class="logo" aria-label="Cognitix Digital home">
-      <span class="logo-text">Cogniti</span>
-      <span class="logo-badge"><span class="logo-x">X</span></span>
-      <span class="logo-digital">DIGITAL</span>
+      <img class="logo-img" src="assets/images/brand_logo_wordmark.png" alt="Cognitix Digital">
     </a>
     <div class="navlinks" id="navLinks">
       <a href="#top">Home</a>
@@ -74,6 +72,11 @@
           <span>Custom Software &amp; Systems</span>
           <span>Brand &amp; Visual Design</span>
         </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual-card hv-1" style="background-image:url('assets/images/work/posters/city-ballerz-poster.png')"></div>
+        <div class="hero-visual-card hv-2" style="background-image:url('assets/images/work/jerseys/city-ballerz-jersey-front.png')"></div>
+        <div class="hero-visual-card hv-3" style="background-image:url('assets/images/work/posters/hotsport-longonot-hike.png')"></div>
       </div>
     </div>
   </section>
@@ -140,28 +143,39 @@
         <p>A mix of brand, web and software work — more added as projects ship.</p>
       </div>
       <div class="case-grid">
-        <article class="case-card reveal">
-          <div class="case-media g1"></div>
+        <article class="case-card reveal" data-slider data-gallery="posters">
+          <div class="case-media-wrap">
+            <div class="case-slides">
+              <button type="button" class="case-slide-img active" data-full="assets/images/work/posters/surgvault-medical.png" style="background-image:url('assets/images/work/posters/surgvault-medical.png')" aria-label="Open Surgvault Medical poster, image 1 of 3"></button>
+              <button type="button" class="case-slide-img" data-full="assets/images/work/posters/hotsport-longonot-hike.png" style="background-image:url('assets/images/work/posters/hotsport-longonot-hike.png')" aria-label="Open Hotsport Gym event poster, image 2 of 3"></button>
+              <button type="button" class="case-slide-img" data-full="assets/images/work/posters/city-ballerz-poster.png" style="background-image:url('assets/images/work/posters/city-ballerz-poster.png')" aria-label="Open City Ballerz league poster, image 3 of 3"></button>
+            </div>
+            <button type="button" class="slide-nav slide-prev" aria-label="Previous image">‹</button>
+            <button type="button" class="slide-nav slide-next" aria-label="Next image">›</button>
+            <div class="slide-dots"></div>
+          </div>
           <div class="case-body">
-            <span class="hex-tag design">BRANDING</span>
-            <h3>Streetwear Cover Art</h3>
-            <p class="case-desc">Cover art and typography direction for a streetwear release — logo mark, type system and print-ready layouts.</p>
+            <span class="hex-tag design">POSTERS &amp; COVER ART</span>
+            <h3>Posters &amp; Cover Art</h3>
+            <p class="case-desc">Event posters and campaign cover art for gyms, brands and community events — concept, layout and print-ready design.</p>
           </div>
         </article>
-        <article class="case-card reveal">
-          <div class="case-media g2"></div>
-          <div class="case-body">
-            <span class="hex-tag design">BRANDING</span>
-            <h3>Apparel &amp; Mockup Design</h3>
-            <p class="case-desc">Product mockups and apparel design for a local clothing line, built for use across web and social.</p>
+        <article class="case-card reveal" data-slider data-gallery="jerseys">
+          <div class="case-media-wrap">
+            <div class="case-slides">
+              <button type="button" class="case-slide-img active" data-full="assets/images/work/jerseys/city-ballerz-jersey-front.png" style="background-image:url('assets/images/work/jerseys/city-ballerz-jersey-front.png')" aria-label="Open City Ballerz jersey front, image 1 of 4"></button>
+              <button type="button" class="case-slide-img" data-full="assets/images/work/jerseys/city-ballerz-jersey-back.png" style="background-image:url('assets/images/work/jerseys/city-ballerz-jersey-back.png')" aria-label="Open City Ballerz jersey back, image 2 of 4"></button>
+              <button type="button" class="case-slide-img" data-full="assets/images/work/jerseys/ballerz-jersey-gold-black.png" style="background-image:url('assets/images/work/jerseys/ballerz-jersey-gold-black.png')" aria-label="Open Ballerz jersey gold and black colourway, image 3 of 4"></button>
+              <button type="button" class="case-slide-img" data-full="assets/images/work/jerseys/city-ballerz-shorts.png" style="background-image:url('assets/images/work/jerseys/city-ballerz-shorts.png')" aria-label="Open City Ballerz shorts, image 4 of 4"></button>
+            </div>
+            <button type="button" class="slide-nav slide-prev" aria-label="Previous image">‹</button>
+            <button type="button" class="slide-nav slide-next" aria-label="Next image">›</button>
+            <div class="slide-dots"></div>
           </div>
-        </article>
-        <article class="case-card reveal">
-          <div class="case-media g3"></div>
           <div class="case-body">
             <span class="hex-tag design">SPORTS BRANDING</span>
-            <h3>Team Jersey &amp; Sports Branding</h3>
-            <p class="case-desc">Full visual identity and jersey direction for a Nairobi basketball team — logo, colourway and kit design.</p>
+            <h3>Team Jerseys &amp; Sports Branding</h3>
+            <p class="case-desc">Full kit direction for City Ballerz — crest, colourway and jersey design for an underground basketball league.</p>
           </div>
         </article>
         <article class="case-card reveal">
@@ -177,7 +191,7 @@
           <div class="case-body">
             <span class="hex-tag dev">SYSTEMS &amp; SUPPORT</span>
             <h3>Systems &amp; Tech Support</h3>
-            <p class="case-desc">Ongoing systems and tech support — keeping infrastructure running and issues resolved after launch.</p>
+            <p class="case-desc">Ongoing systems and tech support keeping infrastructure running and issues resolved after launch.</p>
           </div>
         </article>
         <article class="case-card case-cta reveal">
@@ -196,12 +210,14 @@
       <div class="section-head reveal">
         <span class="eyebrow">PRICING</span>
         <h2>Investment, not guesswork.</h2>
-        <p>Starting prices for the kind of work we do most. Every project is different — these packages are a starting point, and we'll recommend the right solution for your goals and scope.</p>
+        <p>What Cognitix typically costs, so you're not guessing before you reach out.</p>
       </div>
       <div class="price-grid">
         <div class="price-card reveal">
           <div class="price-head">
-            <span class="price-name">Launch</span>
+            <div class="hex-icon dev price-hex">◇</div>
+            <span class="svc-sub">Starter tier</span>
+            <h3 class="price-name">Launch</h3>
             <span class="price-tag">From <strong>KSh 15,000</strong></span>
           </div>
           <p class="price-desc">For individuals and small businesses that need a professional online presence.</p>
@@ -221,7 +237,9 @@
         <div class="price-card price-featured reveal">
           <span class="price-badge">Most Popular</span>
           <div class="price-head">
-            <span class="price-name">Business</span>
+            <div class="hex-icon build price-hex">⌬</div>
+            <span class="svc-sub">Growth tier</span>
+            <h3 class="price-name">Business</h3>
             <span class="price-tag">From <strong>KSh 30,000</strong></span>
           </div>
           <p class="price-desc">For businesses that need a stronger digital presence.</p>
@@ -242,7 +260,9 @@
 
         <div class="price-card reveal">
           <div class="price-head">
-            <span class="price-name">Custom</span>
+            <div class="hex-icon design price-hex">✦</div>
+            <span class="svc-sub">Custom tier</span>
+            <h3 class="price-name">Custom</h3>
             <span class="price-tag">From <strong>KSh 60,000</strong></span>
           </div>
           <p class="price-desc">For organizations requiring custom digital products.</p>
@@ -260,7 +280,9 @@
 
         <div class="price-card price-enterprise reveal">
           <div class="price-head">
-            <span class="price-name">Enterprise / Complex Projects</span>
+            <div class="hex-icon enterprise price-hex">◆</div>
+            <span class="svc-sub">Complex projects</span>
+            <h3 class="price-name">Enterprise</h3>
             <span class="price-tag"><strong>Let's talk</strong></span>
           </div>
           <p class="price-desc">For business management systems, healthcare systems, customer portals, advanced dashboards, large web applications, integrations and automation.</p>
@@ -268,6 +290,7 @@
         </div>
       </div>
       <p class="price-note">Every project is different. These packages provide a starting point. We'll recommend the right solution based on your goals and scope.</p>
+      <p class="price-help">Not sure which package fits? <a class="js-wa-link" href="#" target="_blank" rel="noopener">WhatsApp us</a> and we'll help you figure it out.</p>
     </div>
   </section>
 
@@ -315,7 +338,7 @@
       <div class="about-copy reveal">
         <span class="eyebrow">ABOUT</span>
         <h2>Who's behind Cognitix Digital</h2>
-        <p>Cognitix Digital sits between creativity and engineering. We don't just make things look good — we build things that work.</p>
+        <p>Cognitix Digital sits between creativity and engineering. We don't just make things look good, we build things that work.</p>
         <p>We're a focused, Nairobi-based studio, not a massive agency. Brand identities, posters and visual design on one side; websites, software builds and the systems that keep a business running on the other — handled in one place, by one team.</p>
         <p>We work with startups, SMEs, organizations and established businesses across Kenya, including creative brands, sports organizations and companies that need custom digital systems.</p>
         <div class="stack-row">
@@ -344,7 +367,7 @@
           <div class="form-row">
             <div>
               <label for="name">Your name</label>
-              <input type="text" id="name" placeholder="e.g. Wanjiru Kamau" required>
+              <input type="text" id="name" placeholder="e.g. James Harden" required>
             </div>
             <div>
               <label for="phone">Phone or email</label>
@@ -384,14 +407,21 @@
         <div class="contact-card reveal">
           <h3>Chat with us directly</h3>
           <p>Prefer to skip the form? WhatsApp Cognitix straight — fastest way to get a reply.</p>
-          <button type="button" class="whatsapp-number" id="waNumber" aria-label="Click to reveal WhatsApp number">+254 7•• ••• •••</button>
-          <a class="btn btn-whatsapp js-wa-link" href="#" target="_blank" rel="noopener">WhatsApp Cognitix</a>
+          <a class="btn btn-whatsapp js-wa-link contact-card-btn" href="#" target="_blank" rel="noopener">WhatsApp Cognitix</a>
         </div>
       </div>
     </div>
   </section>
 
 </main>
+
+<!-- Image lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Project image viewer" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close image viewer">✕</button>
+  <button type="button" class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">‹</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button type="button" class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">›</button>
+</div>
 
 <!-- Floating WhatsApp button -->
 <a class="whatsapp-float js-wa-link" href="#" target="_blank" rel="noopener">
@@ -405,9 +435,7 @@
   <div class="wrap footer-grid">
     <div class="footer-col footer-brand-col">
       <div class="footer-brand logo">
-        <span class="logo-text">Cogniti</span>
-        <span class="logo-badge"><span class="logo-x">X</span></span>
-        <span class="logo-digital">DIGITAL</span>
+        <img class="logo-img" src="assets/images/brand_logo_wordmark.png" alt="Cognitix Digital">
       </div>
       <p class="footer-tagline">A Nairobi-based creative-tech studio. We design brands, build websites and develop the software that runs businesses.</p>
       <div class="footer-social">

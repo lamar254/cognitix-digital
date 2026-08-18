@@ -6,22 +6,9 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 const WA_NUMBER = [50, 53, 52, 55, 48, 53, 53, 53, 55, 55, 48, 54]
   .map((code) => String.fromCharCode(code))
   .join('');
-const WA_DISPLAY = `+${WA_NUMBER.slice(0, 3)} ${WA_NUMBER.slice(3, 6)} ${WA_NUMBER.slice(6, 9)} ${WA_NUMBER.slice(9)}`;
-const WA_MASKED = `+${WA_NUMBER.slice(0, 3)} 7•• ••• •••`;
-
 document.querySelectorAll('.js-wa-link').forEach((link) => {
   link.href = `https://wa.me/${WA_NUMBER}`;
 });
-
-const waNumberBtn = document.getElementById('waNumber');
-if (waNumberBtn) {
-  waNumberBtn.textContent = WA_MASKED;
-  waNumberBtn.addEventListener('click', () => {
-    const revealed = waNumberBtn.classList.toggle('revealed');
-    waNumberBtn.textContent = revealed ? WA_DISPLAY : WA_MASKED;
-    waNumberBtn.setAttribute('aria-label', revealed ? 'WhatsApp number revealed' : 'Click to reveal WhatsApp number');
-  });
-}
 
 // Sticky header background
 const header = document.getElementById('siteHeader');
@@ -77,6 +64,118 @@ if (hero && window.matchMedia('(prefers-reduced-motion: reduce)').matches === fa
       const strength = 14 + i * 8;
       blob.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
     });
+  });
+}
+
+// Work section: per-card image sliders + shared lightbox
+const sliders = document.querySelectorAll('[data-slider]');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+let activeGallery = [];
+let activeIndex = 0;
+
+function openLightbox(images, index) {
+  activeGallery = images;
+  activeIndex = index;
+  lightboxImg.src = activeGallery[activeIndex].dataset.full;
+  lightboxImg.alt = activeGallery[activeIndex].getAttribute('aria-label') || '';
+  lightbox.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.hidden = true;
+  lightboxImg.src = '';
+  document.body.style.overflow = '';
+}
+function showLightboxImage(delta) {
+  activeIndex = (activeIndex + delta + activeGallery.length) % activeGallery.length;
+  lightboxImg.src = activeGallery[activeIndex].dataset.full;
+  lightboxImg.alt = activeGallery[activeIndex].getAttribute('aria-label') || '';
+}
+
+sliders.forEach((card) => {
+  const track = card.querySelector('.case-slides');
+  const slides = Array.from(card.querySelectorAll('.case-slide-img'));
+  const prevBtn = card.querySelector('.slide-prev');
+  const nextBtn = card.querySelector('.slide-next');
+  const dotsWrap = card.querySelector('.slide-dots');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', `Go to image ${i + 1}`);
+    if (i === 0) dot.classList.add('active');
+    dot.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function goTo(i) {
+    current = (i + slides.length) % slides.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
+  }
+
+  prevBtn.addEventListener('click', () => { goTo(current - 1); resetAutoplay(); });
+  nextBtn.addEventListener('click', () => { goTo(current + 1); resetAutoplay(); });
+  dots.forEach((dot) => dot.addEventListener('click', resetAutoplay));
+
+  slides.forEach((slide, i) => {
+    slide.addEventListener('click', () => openLightbox(slides, i));
+  });
+
+  // Autoplay: gentle auto-advance, paused on hover/focus/out-of-view and reduced motion
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let autoplayId = null;
+  let inView = false;
+
+  function startAutoplay() {
+    if (reduceMotion || slides.length < 2 || autoplayId) return;
+    autoplayId = setInterval(() => goTo(current + 1), 4000);
+  }
+  function stopAutoplay() {
+    clearInterval(autoplayId);
+    autoplayId = null;
+  }
+  function resetAutoplay() {
+    stopAutoplay();
+    if (inView) startAutoplay();
+  }
+
+  card.addEventListener('mouseenter', stopAutoplay);
+  card.addEventListener('mouseleave', () => inView && startAutoplay());
+  card.addEventListener('focusin', stopAutoplay);
+  card.addEventListener('focusout', () => inView && startAutoplay());
+
+  if (!reduceMotion && slides.length > 1 && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          inView = entry.isIntersecting;
+          if (inView) startAutoplay();
+          else stopAutoplay();
+        });
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(card);
+  }
+});
+
+if (lightbox) {
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => showLightboxImage(-1));
+  document.getElementById('lightboxNext').addEventListener('click', () => showLightboxImage(1));
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showLightboxImage(-1);
+    if (e.key === 'ArrowRight') showLightboxImage(1);
   });
 }
 
