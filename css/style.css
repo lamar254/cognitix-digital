@@ -628,3 +628,192 @@ footer.footer{background:var(--bg-soft); color:var(--ink-soft); padding:22px 0 1
   .wrap{padding:0 18px;}
   .hero{padding:60px 0 70px;}
 }
+
+/* ---------- SKIP LINK ---------- */
+.skip-link{
+  position:absolute; left:12px; top:-60px;
+  background:var(--bg-soft); color:var(--ink);
+  padding:10px 16px; border-radius:10px;
+  border:1px solid var(--line-strong);
+  z-index:200; transition:top .2s ease;
+}
+.skip-link:focus{top:12px;}
+
+/* ---------- NAV small CTA ---------- */
+.btn-sm{padding:11px 20px; font-size:14px;}
+
+/* ---------- SERVICES: 3-col ---------- */
+.svc-grid-3{grid-template-columns:repeat(3,1fr);}
+.svc-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; font-weight:700;
+  color:var(--ink-faint);
+  display:block; margin-bottom:14px;
+}
+.hex-icon.build{background:linear-gradient(135deg,var(--violet),var(--blue));}
+.svc-card-highlight{border-color:var(--line-strong);}
+.svc-card-highlight:hover{box-shadow:var(--shadow-lg), var(--glow-violet);}
+
+/* ---------- WORK: case-study cards ---------- */
+.case-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:26px;
+  margin-top:10px;
+}
+.case-card{
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:var(--surface);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  display:flex; flex-direction:column;
+}
+.case-card:hover{
+  transform:translateY(-5px);
+  box-shadow:var(--shadow-lg), var(--glow-violet);
+  border-color:var(--line-strong);
+}
+.case-media{aspect-ratio:16/10; position:relative; overflow:hidden;}
+.case-media::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size:22px 22px;
+  mix-blend-mode:overlay;
+}
+.case-media.g1{background:linear-gradient(135deg,var(--violet),var(--orchid));}
+.case-media.g2{background:linear-gradient(135deg,var(--mint),var(--blue));}
+.case-media.g3{background:linear-gradient(135deg,var(--pink),var(--amber));}
+.case-media.g4{background:linear-gradient(135deg,var(--bg-soft),var(--violet));}
+.case-media.g5{background:linear-gradient(135deg,var(--blue),var(--mint));}
+.case-body{padding:24px 26px 28px;}
+.case-body h3{font-size:18.5px; margin:10px 0 8px;}
+.case-desc{font-size:14.5px; color:var(--ink-soft); margin:0;}
+
+.case-card.case-cta{
+  background:rgba(255,255,255,0.02);
+  border:1.5px dashed var(--line-strong);
+  align-items:center; justify-content:center;
+  min-height:260px;
+}
+.case-card.case-cta a{
+  text-decoration:none; color:#fff; font-weight:700; font-size:16px;
+  text-align:center; padding:0 20%;
+}
+.case-cta-sub{
+  display:block; font-family:'JetBrains Mono',monospace;
+  font-size:11.5px; color:var(--mint); margin-top:8px; font-weight:600;
+}
+
+/* ---------- PRICING ---------- */
+.pricing{padding:110px 0 100px;}
+.price-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  margin-top:10px;
+  align-items:stretch;
+}
+.price-card{
+  position:relative;
+  border-radius:var(--radius);
+  padding:34px 28px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex; flex-direction:column;
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.price-card:hover{transform:translateY(-5px); border-color:var(--line-strong);}
+.price-featured{
+  background:linear-gradient(180deg, rgba(139,92,246,0.10), rgba(255,255,255,0.035));
+  border-color:rgba(139,92,246,0.55);
+  box-shadow:var(--glow-violet);
+}
+.price-badge{
+  position:absolute; top:-13px; left:28px;
+  background:var(--brand-gradient);
+  color:#fff;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:6px 14px;
+  border-radius:999px;
+  box-shadow:var(--glow-violet);
+}
+.price-head{margin-bottom:12px;}
+.price-name{display:block; font-family:'Poppins',sans-serif; font-weight:700; font-size:19px; color:var(--ink);}
+.price-tag{display:block; margin-top:10px; font-size:15px; color:var(--ink-soft);}
+.price-tag strong{font-size:26px; color:var(--ink); font-family:'Poppins',sans-serif; font-weight:800;}
+.price-desc{font-size:14px; color:var(--ink-soft); margin:14px 0 18px; min-height:42px;}
+.price-list{list-style:none; margin:0 0 26px; padding:0; display:flex; flex-direction:column; gap:9px; flex:1;}
+.price-list li{
+  font-size:13.5px; color:var(--ink-soft);
+  padding-left:20px; position:relative;
+}
+.price-list li::before{
+  content:"✓"; position:absolute; left:0; top:0;
+  color:var(--mint); font-weight:700;
+}
+.price-featured .price-list li::before{color:var(--violet);}
+.price-btn{width:100%; justify-content:center; margin-top:auto;}
+.price-enterprise{justify-content:space-between;}
+.price-enterprise .price-desc{min-height:0;}
+.price-note{
+  margin-top:40px; text-align:center;
+  font-size:13.5px; color:var(--ink-faint);
+  max-width:640px; margin-left:auto; margin-right:auto;
+}
+
+/* ---------- PROCESS: 5-step ---------- */
+.steps-5{grid-template-columns:repeat(5,1fr);}
+
+/* ---------- FOOTER: multi-column ---------- */
+.footer-grid{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1fr;
+  gap:36px;
+  padding:50px 0 30px;
+}
+.footer-col{display:flex; flex-direction:column; gap:12px;}
+.footer-heading{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:2px;
+}
+.footer-col a{
+  color:var(--ink-soft); font-size:14px;
+  transition:color .2s ease;
+}
+.footer-col a:hover{color:var(--ink);}
+.footer-tagline{color:var(--ink-soft); font-size:13.5px; max-width:280px; margin:14px 0 4px;}
+footer.footer{padding:0;}
+.footer-bottom{margin:0; border-top:1px solid var(--line); padding:16px 0 22px;}
+
+/* ---------- RESPONSIVE: new sections ---------- */
+@media (max-width:980px){
+  .svc-grid-3{grid-template-columns:1fr;}
+  .case-grid{grid-template-columns:repeat(2,1fr);}
+  .price-grid{grid-template-columns:repeat(2,1fr);}
+  .steps-5{grid-template-columns:repeat(3,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+
+@media (max-width:760px){
+  .case-grid{grid-template-columns:1fr;}
+  .price-grid{grid-template-columns:1fr;}
+  .steps-5{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr; gap:28px;}
+}
+
+@media (max-width:540px){
+  .pricing{padding:80px 0;}
+  .steps-5{grid-template-columns:1fr;}
+  .price-card{padding:28px 22px;}
+}
